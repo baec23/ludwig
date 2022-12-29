@@ -11,8 +11,10 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://jitpack.io' }
     }
 }
 rootProject.name = "Ludwig"
 include ':app'
-include ':composable-components'
+include ':component'
+include ':core'
