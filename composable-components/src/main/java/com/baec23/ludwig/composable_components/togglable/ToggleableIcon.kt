@@ -1,4 +1,4 @@
-package com.baec23.hobbybank.ui.comp.togglable
+package com.baec23.ludwig.composable_components.togglable
 
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.Spring

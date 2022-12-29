@@ -1,4 +1,4 @@
-package com.baec23.hobbybank.ui.comp.togglable
+package com.baec23.ludwig.composable_components.togglable
 
 import androidx.compose.ui.graphics.vector.ImageVector
 

@@ -1,4 +1,4 @@
-package com.baec23.hobbybank.ui.comp.togglable
+package com.baec23.ludwig.composable_components.togglable
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -9,10 +9,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.baec23.hobbybank.ui.comp.fadinglazy.FadingLazyColumn
-import com.baec23.hobbybank.ui.comp.fadinglazy.FadingLazyHorizontalGrid
-import com.baec23.hobbybank.ui.comp.fadinglazy.FadingLazyRow
-import com.baec23.hobbybank.ui.comp.fadinglazy.FadingLazyVerticalGrid
+import com.baec23.ludwig.composable_components.FadingLazyColumn
+import com.baec23.ludwig.composable_components.FadingLazyHorizontalGrid
+import com.baec23.ludwig.composable_components.FadingLazyRow
+import com.baec23.ludwig.composable_components.FadingLazyVerticalGrid
 
 @Composable
 fun ToggleableIconRow(
