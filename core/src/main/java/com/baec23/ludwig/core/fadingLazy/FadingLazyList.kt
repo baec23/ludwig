@@ -1,4 +1,4 @@
-package com.baec23.ludwig.core.fadinglazy
+package com.baec23.ludwig.core.fadingLazy
 
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.ScrollableDefaults

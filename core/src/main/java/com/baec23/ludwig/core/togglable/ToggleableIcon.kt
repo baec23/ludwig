@@ -7,14 +7,13 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -27,6 +26,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import com.baec23.ludwig.core.autoResizingText.AutoResizingText
 
 @Composable
 fun Toggleable(
@@ -71,7 +71,7 @@ fun ToggleableIcon(
     modifier: Modifier = Modifier,
     isToggled: Boolean,
     imageVector: ImageVector,
-    size: DpSize = DpSize(100.dp, 100.dp),
+    iconSize: DpSize = DpSize(50.dp, 50.dp),
     interactionSource: MutableInteractionSource = MutableInteractionSource(),
     contentDescription: String? = null,
     label: String? = null,
@@ -81,42 +81,46 @@ fun ToggleableIcon(
     toggledOffScale: Float = 0.75f,
     onToggle: () -> Unit,
 ) {
-    val isToggledTransition = updateTransition(targetState = isToggled, label = "isToggled")
-    val animatedColor by isToggledTransition.animateColor(label = "animatedColor") { if (it) toggledOnColor else toggledOffColor }
-    val animatedSize by isToggledTransition.animateFloat(label = "animatedSize", transitionSpec = {
-        spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
-        )
-    }) { if (it) toggledOnScale else toggledOffScale }
+    val isToggledTransition =
+        updateTransition(targetState = isToggled, label = "isToggledTransition")
+    val animatedColor by isToggledTransition.animateColor(label = "colorAnimation") { if (it) toggledOnColor else toggledOffColor }
+    val animatedScale by isToggledTransition.animateFloat(
+        label = "scaleAnimation",
+        transitionSpec = {
+            spring(
+                dampingRatio = Spring.DampingRatioMediumBouncy,
+                stiffness = Spring.StiffnessMedium
+            )
+        }) { if (it) toggledOnScale else toggledOffScale }
 
     Box(
         modifier = modifier
-            .size(size)
             .clickable(interactionSource = interactionSource, indication = null) { onToggle() },
         contentAlignment = Alignment.Center
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize(animatedSize * 0.95f),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             Icon(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxSize(),
+                    .weight(2f, fill = false)
+                    .size(iconSize)
+                    .scale(animatedScale),
                 imageVector = imageVector,
                 contentDescription = contentDescription,
                 tint = animatedColor
             )
             label?.let {
-                Text(
-                    modifier = Modifier.weight(0.5f),
+                AutoResizingText(
+                    modifier = Modifier
+                        .weight(1f, fill = false)
+                        .scale(animatedScale),
                     text = label,
                     color = animatedColor,
                     overflow = TextOverflow.Clip,
                     maxLines = 1,
-                    minLines = 1
+                    minLines = 1,
                 )
             }
         }
