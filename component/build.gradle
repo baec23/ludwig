@@ -49,6 +49,8 @@ afterEvaluate{
         publications{
             release(MavenPublication){
                 from components.release
+                groupId = 'com.baec23.ludwig'
+                artifactId = 'component'
             }
         }
     }
