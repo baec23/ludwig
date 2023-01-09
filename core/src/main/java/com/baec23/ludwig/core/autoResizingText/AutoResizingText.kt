@@ -26,7 +26,7 @@ fun AutoResizingText(
     modifier: Modifier = Modifier,
     text: String,
     mode: AutoResizingTextMode = AutoResizingTextMode.Height,
-    minFontSize: TextUnit = 12.sp,
+    minFontSize: TextUnit = 10.sp,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
     fontStyle: FontStyle? = null,
