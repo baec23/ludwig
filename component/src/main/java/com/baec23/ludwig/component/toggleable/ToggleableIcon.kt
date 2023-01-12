@@ -1,4 +1,4 @@
-package com.baec23.ludwig.core.togglable
+package com.baec23.ludwig.component.toggleable
 
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.Spring

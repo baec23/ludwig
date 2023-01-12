@@ -13,7 +13,6 @@ import com.baec23.ludwig.core.fadingLazy.FadingLazyColumn
 import com.baec23.ludwig.core.fadingLazy.FadingLazyHorizontalGrid
 import com.baec23.ludwig.core.fadingLazy.FadingLazyRow
 import com.baec23.ludwig.core.fadingLazy.FadingLazyVerticalGrid
-import com.baec23.ludwig.core.togglable.ToggleableIcon
 
 @Composable
 fun ToggleableIconRow(

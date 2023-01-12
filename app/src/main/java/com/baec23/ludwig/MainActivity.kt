@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
@@ -23,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.baec23.ludwig.component.section.DisplaySection
-import com.baec23.ludwig.core.togglable.ToggleableIcon
+import com.baec23.ludwig.component.toggleable.ToggleableIcon
 import com.baec23.ludwig.ui.theme.LudwigTheme
 
 class MainActivity : ComponentActivity() {

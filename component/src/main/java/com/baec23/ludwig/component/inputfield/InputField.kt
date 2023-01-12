@@ -40,6 +40,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -64,6 +65,7 @@ fun InputField(
     errorMessage: String? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
     minLines: Int = 1,
     maxLines: Int = Int.MAX_VALUE,
     singleLine: Boolean = minLines == 1 && maxLines == 1,
@@ -140,6 +142,7 @@ fun InputField(
             singleLine = singleLine,
             minLines = minLines,
             maxLines = maxLines,
+            visualTransformation = visualTransformation,
             decorationBox = { innerTextField ->
                 Column {
                     Box(contentAlignment = Alignment.CenterStart) {
