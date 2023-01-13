@@ -9,7 +9,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        minSdk 24
+        minSdk 26
         targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -38,7 +38,8 @@ dependencies {
 
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation platform('androidx.compose:compose-bom:2022.12.00')
-    implementation 'androidx.compose.material3:material3:1.1.0-alpha03'
+    implementation 'androidx.compose.material3:material3:1.1.0-alpha04'
+    implementation 'androidx.core:core-ktx:+'
     debugImplementation 'androidx.compose.ui:ui-tooling'
 }
 
