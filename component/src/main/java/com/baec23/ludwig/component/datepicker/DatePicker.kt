@@ -441,7 +441,7 @@ private fun DatePickerSelectableYear(
                 text = year.toString(),
                 textAlign = TextAlign.Center,
                 color = when {
-                    isSelected -> Color.White
+                    isSelected -> MaterialTheme.colorScheme.onPrimary
                     isPresentYear -> MaterialTheme.colorScheme.primary
                     else -> Color.Unspecified
                 },
@@ -477,7 +477,7 @@ private fun DatePickerCalendarButton(
         }) {
         Text(
             modifier = Modifier.align(Alignment.Center), text = day.toString(), color = when {
-                isSelected -> Color.White
+                isSelected -> MaterialTheme.colorScheme.onPrimary
                 isToday -> MaterialTheme.colorScheme.primary
                 else -> Color.Unspecified
             }, style = MaterialTheme.typography.bodySmall
