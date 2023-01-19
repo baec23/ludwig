@@ -399,7 +399,7 @@ fun LabelledValueButton(
     )
 }
 
-fun Modifier.maxWidth(
+internal fun Modifier.maxWidth(
     fraction: Float = 1f,
 ) = layout { measurable, constraints ->
     val maxWidth = (constraints.maxWidth * fraction).roundToInt()

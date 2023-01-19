@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 @Composable
-fun LoadingDotsIndicator(
+internal fun LoadingDotsIndicator(
     modifier: Modifier = Modifier,
     dotSpacing: Dp = 8.dp
 ) {

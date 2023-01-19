@@ -246,7 +246,7 @@ fun WrappingSpinner(
 }
 
 @Composable
-fun SpinnerItem(
+internal fun SpinnerItem(
     text: String,
     textStyle: TextStyle,
     itemDisplayOffset: Float,

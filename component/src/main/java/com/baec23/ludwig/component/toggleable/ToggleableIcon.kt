@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.baec23.ludwig.core.autoResizingText.AutoResizingText
 
 @Composable
-fun Toggleable(
+private fun Toggleable(
     modifier: Modifier = Modifier,
     isToggled: Boolean,
     onToggle: () -> Unit,

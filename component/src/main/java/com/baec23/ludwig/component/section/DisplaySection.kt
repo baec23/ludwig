@@ -139,25 +139,3 @@ fun ExpandableDisplaySection(
         }
     }
 }
-//
-//@Preview
-//@Composable
-//fun DisplaySectionPreview() {
-//    Box(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .background(Color.LightGray),
-//    ) {
-//        DisplaySection(
-//            modifier = Modifier.fillMaxWidth(),
-//            headerText = "Hello Section",
-//            headerSubtext = "Hello subtext this is a description"
-//        ) {
-//            Box(
-//                contentAlignment = Alignment.Center,
-//            ) {
-//                Text("Placeholder")
-//            }
-//        }
-//    }
-//}

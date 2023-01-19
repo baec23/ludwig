@@ -50,14 +50,3 @@ fun PreferencesSection(
         }
     }
 }
-
-//@Preview
-//@Composable
-//fun PreferencesSectionPreview() {
-//    PreferencesSection(
-//        headerTitle = "My Section Title",
-//        headerIcon = Icons.Rounded.Favorite
-//    ) {
-//        Text("Content")
-//    }
-//}

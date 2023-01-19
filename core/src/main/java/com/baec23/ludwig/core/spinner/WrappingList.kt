@@ -2,10 +2,10 @@ package com.baec23.ludwig.core.spinner
 
 import kotlin.math.abs
 
-fun <T> wrappingListOf(vararg elements: T): WrappingList<T> =
+internal fun <T> wrappingListOf(vararg elements: T): WrappingList<T> =
     if (elements.isNotEmpty()) WrappingList(elements.asList()) else WrappingList()
 
-class WrappingList<T>(
+internal class WrappingList<T>(
     private val list: List<T> = emptyList()
 ) : AbstractList<T>() {
     override val size: Int
@@ -17,10 +17,10 @@ class WrappingList<T>(
     }
 }
 
-fun <T> mutableWrappingListOf(vararg elements: T): MutableWrappingList<T> =
+internal fun <T> mutableWrappingListOf(vararg elements: T): MutableWrappingList<T> =
     if (elements.isNotEmpty()) MutableWrappingList(elements.asList()) else MutableWrappingList()
 
-class MutableWrappingList<T>(
+internal class MutableWrappingList<T>(
     list: List<T> = emptyList()
 ) : AbstractMutableList<T>() {
     private val mutableList: MutableList<T> = mutableListOf()
@@ -57,7 +57,7 @@ class MutableWrappingList<T>(
     }
 }
 
-fun Int.toWrappedIndex(size: Int): Int {
+internal fun Int.toWrappedIndex(size: Int): Int {
     if (size == 0) {
         return 0
     }

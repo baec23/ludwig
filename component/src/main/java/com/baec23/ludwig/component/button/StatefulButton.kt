@@ -236,7 +236,7 @@ fun StatefulButton(
     )
 }
 
-enum class ButtonAnimationState {
+internal enum class ButtonAnimationState {
     Idle,
     Pressed,
 }

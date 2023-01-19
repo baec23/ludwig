@@ -40,7 +40,7 @@ fun TimePicker(
     initialTime: LocalTime = LocalTime.now(),
     offsetScaleMultiplier: Float = 0.25f,
     offsetAlphaMultiplier: Float = 0.25f,
-    offsetRotationMultiplier: Float = 0.25f,
+    offsetRotationMultiplier: Float = 25f,
     onTimeChanged: (LocalTime) -> Unit,
 ) {
     when (type) {
@@ -108,7 +108,7 @@ private fun TimePickerHoursMinutesSeconds12Hour(
     initialTime: LocalTime = LocalTime.now(),
     offsetScaleMultiplier: Float = 0.25f,
     offsetAlphaMultiplier: Float = 0.25f,
-    offsetRotationMultiplier: Float = 0.25f,
+    offsetRotationMultiplier: Float = 25f,
     onTimeChanged: (LocalTime) -> Unit,
 ) {
     val validHours = mutableListOf("12")
@@ -234,7 +234,7 @@ private fun TimePickerHoursMinutes12Hour(
     initialTime: LocalTime = LocalTime.now(),
     offsetScaleMultiplier: Float = 0.25f,
     offsetAlphaMultiplier: Float = 0.25f,
-    offsetRotationMultiplier: Float = 0.25f,
+    offsetRotationMultiplier: Float = 25f,
     onTimeChanged: (LocalTime) -> Unit,
 ) {
     val validHours = mutableListOf("12")
@@ -337,7 +337,7 @@ private fun TimePickerHoursMinutesSeconds24Hour(
     initialTime: LocalTime = LocalTime.now(),
     offsetScaleMultiplier: Float = 0.25f,
     offsetAlphaMultiplier: Float = 0.25f,
-    offsetRotationMultiplier: Float = 0.25f,
+    offsetRotationMultiplier: Float = 25f,
     onTimeChanged: (LocalTime) -> Unit,
 ) {
     val validHours = mutableListOf<String>()
@@ -437,7 +437,7 @@ private fun TimePickerHoursMinutes24Hour(
     initialTime: LocalTime = LocalTime.now(),
     offsetScaleMultiplier: Float = 0.25f,
     offsetAlphaMultiplier: Float = 0.25f,
-    offsetRotationMultiplier: Float = 0.25f,
+    offsetRotationMultiplier: Float = 25f,
     onTimeChanged: (LocalTime) -> Unit,
 ) {
     val validHours = mutableListOf<String>()
