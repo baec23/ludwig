@@ -124,7 +124,7 @@ private fun TimePickerHoursMinutesSeconds12Hour(
     }
 
     var selectedTime by remember { mutableStateOf(initialTime) }
-    var selectedHourIndex by remember { mutableStateOf(if (initialTime.hour in 1..12) initialTime.hour else initialTime.hour % 12) }
+    var selectedHourIndex by remember { mutableStateOf(if (initialTime.hour in 1..11) initialTime.hour else initialTime.hour % 12) }
     var selectedMinuteIndex by remember { mutableStateOf(initialTime.minute) }
     var selectedSecondsIndex by remember { mutableStateOf(initialTime.second) }
     var selectedAmPmIndex by remember { mutableStateOf(if (initialTime.hour < 12) 0 else 1) }
@@ -248,7 +248,7 @@ private fun TimePickerHoursMinutes12Hour(
     }
 
     var selectedTime by remember { mutableStateOf(initialTime) }
-    var selectedHourIndex by remember { mutableStateOf(if (initialTime.hour in 1..12) initialTime.hour else initialTime.hour % 12) }
+    var selectedHourIndex by remember { mutableStateOf(if (initialTime.hour in 1..11) initialTime.hour else initialTime.hour % 12) }
     var selectedMinuteIndex by remember { mutableStateOf(initialTime.minute) }
     var selectedAmPmIndex by remember { mutableStateOf(if (initialTime.hour < 12) 0 else 1) }
     val hapticFeedback = LocalHapticFeedback.current

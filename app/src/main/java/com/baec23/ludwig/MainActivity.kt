@@ -3,27 +3,26 @@ package com.baec23.ludwig
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.baec23.ludwig.component.section.DisplaySection
-import com.baec23.ludwig.component.toggleable.ToggleableIcon
+import com.baec23.ludwig.component.timepicker.TimePicker
+import com.baec23.ludwig.component.timepicker.TimePickerType
 import com.baec23.ludwig.ui.theme.LudwigTheme
+import java.time.LocalTime
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,40 +31,46 @@ class MainActivity : ComponentActivity() {
             LudwigTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize().padding(16.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
-                    var selectedIconIndex by remember { mutableStateOf(0) }
-
-                    DisplaySection(headerText = "ToggleableIcon test") {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-//                                .height(50.dp),
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            ToggleableIcon(
-                                isToggled = selectedIconIndex == 0,
-                                imageVector = Icons.Default.AccountBox,
-                                label = "Accountasdfsadfsdfasdfsadf",
-                                iconSize = DpSize(100.dp, 100.dp)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(state = rememberScrollState())
+                    ) {
+                        DisplaySection(headerText = "HH:MM:SS 12 Hour Spinner") {
+                            var time by remember { mutableStateOf(LocalTime.now()) }
+                            Text("Selected Time = $time")
+                            TimePicker(
+                                initialTime = LocalTime.now().minusHours(1),
+                                type = TimePickerType.HoursMinutesSeconds12Hour,
+                                selectedTextColor = MaterialTheme.colorScheme.primary
                             ) {
-                                selectedIconIndex = 0
+                                time = it
                             }
-                            ToggleableIcon(
-                                isToggled = selectedIconIndex == 1,
-                                imageVector = Icons.Default.Home,
-                                label = "Home"
-                            ) {
-                                selectedIconIndex = 1
+                        }
+                        DisplaySection(headerText = "HH:MM 12 Hour Spinner") {
+                            var time by remember { mutableStateOf(LocalTime.now()) }
+                            Text("Selected Time = $time")
+                            TimePicker(initialTime = LocalTime.now().minusHours(1), type = TimePickerType.HoursMinutes12Hour) {
+                                time = it
                             }
-                            ToggleableIcon(
-                                isToggled = selectedIconIndex == 2,
-                                imageVector = Icons.Default.ShoppingCart,
-                                label = "Cart"
-                            ) {
-                                selectedIconIndex = 2
+                        }
+                        DisplaySection(headerText = "HH:MM:SS 24 Hour Spinner") {
+                            var time by remember { mutableStateOf(LocalTime.now()) }
+                            Text("Selected Time = $time")
+                            TimePicker(initialTime = LocalTime.now().minusHours(1), type = TimePickerType.HoursMinutesSeconds24Hour) {
+                                time = it
+                            }
+                        }
+                        DisplaySection(headerText = "HH:MM 24 Hour Spinner") {
+                            var time by remember { mutableStateOf(LocalTime.now()) }
+                            Text("Selected Time = $time")
+                            TimePicker(initialTime = LocalTime.now().minusHours(1), type = TimePickerType.HoursMinutes24Hour) {
+                                time = it
                             }
                         }
                     }
