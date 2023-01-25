@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
@@ -37,13 +38,13 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
+                        .fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(16.dp)
                             .verticalScroll(state = rememberScrollState())
                     ) {
                         var input1 by remember { mutableStateOf("") }
@@ -53,7 +54,8 @@ class MainActivity : ComponentActivity() {
                             isExpanded = isExpanded,
                             onExpand = { isExpanded = !isExpanded },
                             headerText = "Expandable Display Section",
-                            headerIcon = Icons.Default.AccountBox
+                            headerIcon = Icons.Default.AccountBox,
+                            headerSubtext = "Hello this is some subtext"
                         ) {
                             InputField(
                                 value = input1,
@@ -75,7 +77,7 @@ class MainActivity : ComponentActivity() {
                             }
 
                         }
-                        DisplaySection(headerText = "Date Picker / Time Spinner") {
+                        DisplaySection(headerText = "Date Picker / Time Spinner", headerIcon = Icons.Default.Place, headerSubtext = "This is a section to test date picker and time spinner") {
                             DatePicker(onCancelled = { }) { }
                             TimePicker(onTimeChanged = {})
                         }

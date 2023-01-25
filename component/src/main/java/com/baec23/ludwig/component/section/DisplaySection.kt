@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
@@ -27,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -47,30 +49,36 @@ fun DisplaySection(
     contentPadding: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 16.dp),
     content: @Composable ColumnScope.() -> Unit
 ) {
+    val textHeightDp = with(LocalDensity.current) { headerTextStyle.lineHeight.toDp() }
     Column(modifier = modifier) {
-        Row(verticalAlignment = Alignment.Bottom) {
+        Row(verticalAlignment = Alignment.Top) {
             headerIcon?.let {
                 Icon(
+                    modifier = Modifier.size(textHeightDp),
                     imageVector = headerIcon,
                     contentDescription = headerText,
                     tint = headerIconColor
                 )
                 Spacer(modifier = Modifier.width(4.dp))
             }
-            Text(
-                text = headerText,
-                style = headerTextStyle,
-                textAlign = TextAlign.Start,
-            )
+
+            Column {
+                Text(
+                    text = headerText,
+                    style = headerTextStyle,
+                    textAlign = TextAlign.Start,
+                )
+                headerSubtext?.let {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = headerSubtext,
+                        style = headerSubtextStyle,
+                        textAlign = TextAlign.Start
+                    )
+                }
+            }
         }
-        headerSubtext?.let {
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = headerSubtext,
-                style = headerSubtextStyle,
-                textAlign = TextAlign.Start
-            )
-        }
+
         Spacer(modifier = Modifier.height(2.dp))
         Divider(color = dividerColor, thickness = 2.dp)
         Column(
@@ -103,6 +111,7 @@ fun ExpandableDisplaySection(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val arrowRotation by animateFloatAsState(targetValue = if (isExpanded) 90f else 0f)
+    val textHeightDp = with(LocalDensity.current) { headerTextStyle.lineHeight.toDp() }
     Column(modifier = modifier) {
         //Header
         Row(
@@ -115,28 +124,31 @@ fun ExpandableDisplaySection(
             verticalAlignment = Alignment.Bottom
         ) {
             Column(modifier = Modifier.weight(1f, fill = true)) {
-                Row(verticalAlignment = Alignment.Bottom) {
+                Row(verticalAlignment = Alignment.Top) {
                     headerIcon?.let {
                         Icon(
+                            modifier = Modifier.size(textHeightDp),
                             imageVector = headerIcon,
                             contentDescription = headerText,
                             tint = headerIconColor
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                     }
-                    Text(
-                        text = headerText,
-                        style = headerTextStyle,
-                        textAlign = TextAlign.Start,
-                    )
-                }
-                headerSubtext?.let {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = headerSubtext,
-                        style = headerSubtextStyle,
-                        textAlign = TextAlign.Start
-                    )
+                    Column {
+                        Text(
+                            text = headerText,
+                            style = headerTextStyle,
+                            textAlign = TextAlign.Start,
+                        )
+                        headerSubtext?.let {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = headerSubtext,
+                                style = headerSubtextStyle,
+                                textAlign = TextAlign.Start
+                            )
+                        }
+                    }
                 }
             }
             Column(modifier = Modifier.padding(start = 20.dp)) {

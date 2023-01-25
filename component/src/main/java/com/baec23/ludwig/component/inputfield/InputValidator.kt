@@ -16,15 +16,12 @@ class InputValidator constructor(
             regex.matches(it.toString())
         }
     }
-
     fun filter(s: String): String {
         return s.filter { predicate(it) }
     }
-
     fun isValid(c: Char): Boolean {
         return predicate(c)
     }
-
     fun isValid(s: CharSequence): Boolean {
         return s.filter { predicate(it) } == s
     }
