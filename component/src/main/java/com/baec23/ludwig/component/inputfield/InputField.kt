@@ -128,7 +128,7 @@ fun InputField(
                         keyEvent = it,
                         focusManager = focusManager,
                         isSingleLine = singleLine,
-                        inputValidator
+                        inputValidator = inputValidator
                     )
                 },
             value = value,
@@ -220,9 +220,10 @@ private fun handleKeyEvent(
                     if (!result) {
                         focusManager.clearFocus()
                     }
+                    return true
                 }
             }
         }
     }
-    return true
+    return false
 }
