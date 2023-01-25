@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
@@ -43,6 +42,7 @@ fun DisplaySection(
     headerSubtextStyle: TextStyle = MaterialTheme.typography.titleSmall,
     headerIconColor: Color = MaterialTheme.colorScheme.primary,
     dividerColor: Color = MaterialTheme.colorScheme.primary,
+    horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     contentSpacing: Dp = 12.dp,
     contentPadding: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 16.dp),
     content: @Composable ColumnScope.() -> Unit
@@ -76,9 +76,9 @@ fun DisplaySection(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(contentPadding)
-                .align(Alignment.CenterHorizontally),
-            verticalArrangement = Arrangement.spacedBy(contentSpacing)
+                .padding(contentPadding),
+            verticalArrangement = Arrangement.spacedBy(contentSpacing),
+            horizontalAlignment = horizontalAlignment
         ) {
             content()
         }
@@ -97,6 +97,7 @@ fun ExpandableDisplaySection(
     headerSubtextStyle: TextStyle = MaterialTheme.typography.titleSmall,
     headerIconColor: Color = MaterialTheme.colorScheme.primary,
     dividerColor: Color = MaterialTheme.colorScheme.primary,
+    horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     contentSpacing: Dp = 12.dp,
     contentPadding: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 16.dp),
     content: @Composable ColumnScope.() -> Unit
@@ -155,9 +156,9 @@ fun ExpandableDisplaySection(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(contentPadding)
-                    .align(Alignment.CenterHorizontally),
-                verticalArrangement = Arrangement.spacedBy(contentSpacing)
+                    .padding(contentPadding),
+                verticalArrangement = Arrangement.spacedBy(contentSpacing),
+                horizontalAlignment = horizontalAlignment
             ) {
                 content()
             }
