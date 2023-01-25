@@ -36,6 +36,7 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.utf16CodePoint
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -67,11 +68,10 @@ fun InputField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     minLines: Int = 1,
-    maxLines: Int = Int.MAX_VALUE,
+    maxLines: Int = 1,
     singleLine: Boolean = minLines == 1 && maxLines == 1,
     inputValidator: InputValidator = if (singleLine) InputValidator.TextNoSpaces else InputValidator.TextWithSpacesAndNewLine
 ) {
-
     var isFocused by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
 
@@ -127,7 +127,8 @@ fun InputField(
                     handleKeyEvent(
                         keyEvent = it,
                         focusManager = focusManager,
-                        isSingleLine = singleLine
+                        isSingleLine = singleLine,
+                        inputValidator
                     )
                 },
             value = value,
@@ -208,22 +209,18 @@ fun InputField(
 private fun handleKeyEvent(
     keyEvent: KeyEvent,
     focusManager: FocusManager,
-    isSingleLine: Boolean
+    isSingleLine: Boolean,
+    inputValidator: InputValidator
 ): Boolean {
-    when (keyEvent.key) {
-        Key.Enter -> {
-            if (isSingleLine) {
-                val result = focusManager.moveFocus(FocusDirection.Next)
-                if (!result) {
-                    focusManager.clearFocus()
+    if (!inputValidator.isValid(keyEvent.utf16CodePoint.toChar())) {
+        when (keyEvent.key) {
+            Key.Enter, Key.Tab -> {
+                if (isSingleLine) {
+                    val result = focusManager.moveFocus(FocusDirection.Down)
+                    if (!result) {
+                        focusManager.clearFocus()
+                    }
                 }
-            }
-        }
-
-        Key.Tab -> {
-            val result = focusManager.moveFocus(FocusDirection.Next)
-            if (!result) {
-                focusManager.clearFocus()
             }
         }
     }

@@ -88,15 +88,15 @@ fun DatePicker(
     onSelectedDateChanged: ((LocalDate) -> Unit)? = null,
     onViewingDateChanged: ((LocalDate) -> Unit)? = null,
     shouldFinalizeOnSelect: Boolean = false,
-    onDateSelectionFinalized: (LocalDate) -> Unit,
-    onCancelled: () -> Unit,
     header: (@Composable DatePickerScope.() -> Unit)? = { DefaultHeader() },
     footer: (@Composable DatePickerScope.() -> Unit)? = { DefaultFooter() },
-    content: @Composable DatePickerScope.() -> Unit = { DefaultContent() }
+    content: @Composable DatePickerScope.() -> Unit = { DefaultContent() },
+    onCancelled: () -> Unit,
+    onDateSelectionFinalized: (LocalDate) -> Unit,
 ) {
     val todayDate = LocalDate.now()
     var startDate = todayDate
-    initialDate?.let{ startDate = initialDate }
+    initialDate?.let { startDate = initialDate }
     var selectedDate by rememberSaveable { mutableStateOf(startDate) }
     var viewingDate by rememberSaveable { mutableStateOf(startDate) }
 

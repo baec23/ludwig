@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -38,6 +39,9 @@ fun DisplaySection(
     headerText: String,
     headerSubtext: String? = null,
     headerIcon: ImageVector? = null,
+    headerTextStyle: TextStyle = MaterialTheme.typography.titleMedium,
+    headerSubtextStyle: TextStyle = MaterialTheme.typography.titleSmall,
+    headerIconColor: Color = MaterialTheme.colorScheme.primary,
     dividerColor: Color = MaterialTheme.colorScheme.primary,
     contentSpacing: Dp = 12.dp,
     contentPadding: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 16.dp),
@@ -47,16 +51,15 @@ fun DisplaySection(
         Row(verticalAlignment = Alignment.Bottom) {
             headerIcon?.let {
                 Icon(
-                    modifier = Modifier.size(50.dp, 50.dp),
                     imageVector = headerIcon,
                     contentDescription = headerText,
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = headerIconColor
                 )
                 Spacer(modifier = Modifier.width(4.dp))
             }
             Text(
                 text = headerText,
-                style = MaterialTheme.typography.labelLarge,
+                style = headerTextStyle,
                 textAlign = TextAlign.Start,
             )
         }
@@ -64,7 +67,7 @@ fun DisplaySection(
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = headerSubtext,
-                style = MaterialTheme.typography.labelSmall,
+                style = headerSubtextStyle,
                 textAlign = TextAlign.Start
             )
         }
@@ -86,9 +89,13 @@ fun DisplaySection(
 fun ExpandableDisplaySection(
     modifier: Modifier = Modifier,
     isExpanded: Boolean,
-    headerText: String,
     onExpand: () -> Unit,
+    headerText: String,
     headerSubtext: String? = null,
+    headerIcon: ImageVector? = null,
+    headerTextStyle: TextStyle = MaterialTheme.typography.titleMedium,
+    headerSubtextStyle: TextStyle = MaterialTheme.typography.titleSmall,
+    headerIconColor: Color = MaterialTheme.colorScheme.primary,
     dividerColor: Color = MaterialTheme.colorScheme.primary,
     contentSpacing: Dp = 12.dp,
     contentPadding: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 16.dp),
@@ -104,17 +111,34 @@ fun ExpandableDisplaySection(
                     onExpand()
                 },
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top
+            verticalAlignment = Alignment.Bottom
         ) {
             Column(modifier = Modifier.weight(1f, fill = true)) {
-
-                Text(text = headerText, style = MaterialTheme.typography.labelLarge)
+                Row(verticalAlignment = Alignment.Bottom) {
+                    headerIcon?.let {
+                        Icon(
+                            imageVector = headerIcon,
+                            contentDescription = headerText,
+                            tint = headerIconColor
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                    }
+                    Text(
+                        text = headerText,
+                        style = headerTextStyle,
+                        textAlign = TextAlign.Start,
+                    )
+                }
                 headerSubtext?.let {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = it, style = MaterialTheme.typography.labelSmall)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = headerSubtext,
+                        style = headerSubtextStyle,
+                        textAlign = TextAlign.Start
+                    )
                 }
             }
-            Column() {
+            Column(modifier = Modifier.padding(start = 20.dp)) {
                 Icon(
                     modifier = Modifier.rotate(arrowRotation),
                     imageVector = Icons.Default.ArrowForward,
@@ -122,6 +146,7 @@ fun ExpandableDisplaySection(
                 )
             }
         }
+
         //Divider
         Spacer(modifier = Modifier.height(2.dp))
         Divider(color = dividerColor, thickness = 2.dp)

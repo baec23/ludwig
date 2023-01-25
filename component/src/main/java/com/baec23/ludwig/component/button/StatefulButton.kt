@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalAnimationApi::class)
+
 package com.baec23.ludwig.component.button
 
 import androidx.compose.animation.AnimatedContent
@@ -43,8 +45,43 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import com.baec23.ludwig.component.misc.LoadingDotsIndicator
 import java.util.concurrent.CancellationException
+@Composable
+fun StatefulButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    textColor: Color = MaterialTheme.colorScheme.primary,
+    state: ButtonState = ButtonState.Enabled,
+    shape: Shape = CircleShape,
+    borderColor: Color = MaterialTheme.colorScheme.primary,
+    disabledBorderColor: Color = Color.LightGray,
+    borderWidth: Dp = 1.dp,
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
+    loadingContent: @Composable () -> Unit = { LoadingDotsIndicator() },
+    onClick: () -> Unit,
+) {
+    StatefulButton(
+        modifier = modifier,
+        state = state,
+        shape = shape,
+        borderColor = borderColor,
+        disabledBorderColor = disabledBorderColor,
+        borderWidth = borderWidth,
+        contentPadding = contentPadding,
+        content = {
+            Text(
+                text = text,
+                color = textColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        loadingContent = loadingContent,
+        onRelease = onClick,
+        onPress = {},
+        onCancel = {},
+    )
+}
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun StatefulButton(
     modifier: Modifier = Modifier,
@@ -168,44 +205,6 @@ fun StatefulButton(
         }
     }
 }
-
-@Composable
-fun StatefulButton(
-    modifier: Modifier = Modifier,
-    text: String,
-    textColor: Color = MaterialTheme.colorScheme.primary,
-    state: ButtonState = ButtonState.Enabled,
-    shape: Shape = CircleShape,
-    borderColor: Color = MaterialTheme.colorScheme.primary,
-    disabledBorderColor: Color = Color.LightGray,
-    borderWidth: Dp = 1.dp,
-    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    loadingContent: @Composable () -> Unit = { LoadingDotsIndicator() },
-    onClick: () -> Unit,
-) {
-    StatefulButton(
-        modifier = modifier,
-        state = state,
-        shape = shape,
-        borderColor = borderColor,
-        disabledBorderColor = disabledBorderColor,
-        borderWidth = borderWidth,
-        contentPadding = contentPadding,
-        content = {
-            Text(
-                text = text,
-                color = textColor,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        },
-        loadingContent = loadingContent,
-        onRelease = onClick,
-        onPress = {},
-        onCancel = {},
-    )
-}
-
 
 @Composable
 fun StatefulButton(

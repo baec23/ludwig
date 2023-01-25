@@ -1,6 +1,7 @@
 package com.baec23.ludwig
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -9,20 +10,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.baec23.ludwig.component.button.StatefulButton
+import com.baec23.ludwig.component.datepicker.DatePicker
+import com.baec23.ludwig.component.inputfield.InputField
+import com.baec23.ludwig.component.inputfield.PasswordInputField
 import com.baec23.ludwig.component.section.DisplaySection
+import com.baec23.ludwig.component.section.ExpandableDisplaySection
 import com.baec23.ludwig.component.timepicker.TimePicker
-import com.baec23.ludwig.component.timepicker.TimePickerType
 import com.baec23.ludwig.ui.theme.LudwigTheme
-import java.time.LocalTime
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,37 +46,38 @@ class MainActivity : ComponentActivity() {
                             .fillMaxWidth()
                             .verticalScroll(state = rememberScrollState())
                     ) {
-                        DisplaySection(headerText = "HH:MM:SS 12 Hour Spinner") {
-                            var time by remember { mutableStateOf(LocalTime.now()) }
-                            Text("Selected Time = $time")
-                            TimePicker(
-                                initialTime = LocalTime.now().minusHours(1),
-                                type = TimePickerType.HoursMinutesSeconds12Hour,
-                                selectedTextColor = MaterialTheme.colorScheme.primary
-                            ) {
-                                time = it
+                        var input1 by remember { mutableStateOf("") }
+                        var input2 by remember { mutableStateOf("") }
+                        var isExpanded by remember { mutableStateOf(false) }
+                        ExpandableDisplaySection(
+                            isExpanded = isExpanded,
+                            onExpand = { isExpanded = !isExpanded },
+                            headerText = "Expandable Display Section",
+                            headerIcon = Icons.Default.AccountBox
+                        ) {
+                            InputField(
+                                value = input1,
+                                onValueChange = { input1 = it },
+                                label = "Username"
+                            )
+                            PasswordInputField(
+                                value = input2,
+                                onValueChange = { input2 = it },
+                                label = "Password",
+                                placeholder = "Password can only contain letters, numbers, and symbols"
+                            )
+                            StatefulButton(text = "Hey") {
+                                Toast.makeText(
+                                    applicationContext,
+                                    "Password is : $input2",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
+
                         }
-                        DisplaySection(headerText = "HH:MM 12 Hour Spinner") {
-                            var time by remember { mutableStateOf(LocalTime.now()) }
-                            Text("Selected Time = $time")
-                            TimePicker(initialTime = LocalTime.now().minusHours(1), type = TimePickerType.HoursMinutes12Hour) {
-                                time = it
-                            }
-                        }
-                        DisplaySection(headerText = "HH:MM:SS 24 Hour Spinner") {
-                            var time by remember { mutableStateOf(LocalTime.now()) }
-                            Text("Selected Time = $time")
-                            TimePicker(initialTime = LocalTime.now().minusHours(1), type = TimePickerType.HoursMinutesSeconds24Hour) {
-                                time = it
-                            }
-                        }
-                        DisplaySection(headerText = "HH:MM 24 Hour Spinner") {
-                            var time by remember { mutableStateOf(LocalTime.now()) }
-                            Text("Selected Time = $time")
-                            TimePicker(initialTime = LocalTime.now().minusHours(1), type = TimePickerType.HoursMinutes24Hour) {
-                                time = it
-                            }
+                        DisplaySection(headerText = "Date Picker / Time Spinner") {
+                            DatePicker(onCancelled = { }) { }
+                            TimePicker(onTimeChanged = {})
                         }
                     }
                 }
