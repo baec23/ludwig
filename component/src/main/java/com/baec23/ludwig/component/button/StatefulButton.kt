@@ -45,6 +45,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import com.baec23.ludwig.component.misc.LoadingDotsIndicator
 import java.util.concurrent.CancellationException
+
+fun Test(): String {
+
+    var a: String? = null
+    a?.let { return a }
+    throw Exception()
+
+}
+
+
 @Composable
 fun StatefulButton(
     modifier: Modifier = Modifier,

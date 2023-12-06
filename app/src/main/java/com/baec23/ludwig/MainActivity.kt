@@ -25,6 +25,7 @@ import com.baec23.ludwig.component.button.StatefulButton
 import com.baec23.ludwig.component.datepicker.DatePicker
 import com.baec23.ludwig.component.inputfield.InputField
 import com.baec23.ludwig.component.inputfield.PasswordInputField
+import com.baec23.ludwig.component.morph.Morpher
 import com.baec23.ludwig.component.section.DisplaySection
 import com.baec23.ludwig.component.section.ExpandableDisplaySection
 import com.baec23.ludwig.component.timepicker.TimePicker
@@ -50,6 +51,14 @@ class MainActivity : ComponentActivity() {
                         var input1 by remember { mutableStateOf("") }
                         var input2 by remember { mutableStateOf("") }
                         var isExpanded by remember { mutableStateOf(false) }
+                        var isExpanded2 by remember { mutableStateOf(false) }
+                        ExpandableDisplaySection(
+                            isExpanded = isExpanded2,
+                            onExpand = { isExpanded2 = !isExpanded2 },
+                            headerText = "Morpher Test"
+                        ) {
+                            Morpher()
+                        }
                         ExpandableDisplaySection(
                             isExpanded = isExpanded,
                             onExpand = { isExpanded = !isExpanded },
@@ -77,7 +86,11 @@ class MainActivity : ComponentActivity() {
                             }
 
                         }
-                        DisplaySection(headerText = "Date Picker / Time Spinner", headerIcon = Icons.Default.Place, headerSubtext = "This is a section to test date picker and time spinner") {
+                        DisplaySection(
+                            headerText = "Date Picker / Time Spinner",
+                            headerIcon = Icons.Default.Place,
+                            headerSubtext = "This is a section to test date picker and time spinner"
+                        ) {
                             DatePicker(onCancelled = { }) { }
                             TimePicker(onTimeChanged = {})
                         }
