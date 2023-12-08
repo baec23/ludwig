@@ -6,7 +6,6 @@ import android.util.Log
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.graphics.vector.PathNode
@@ -43,258 +42,59 @@ fun equalizePathNodes(
 }
 
 
-fun List<PathNode>.toDrawSegments(): List<DrawSegment> {
-    val toReturn = mutableListOf<DrawSegment>()
+fun List<PathNode>.convertToAbsoluteCommands(): Pair<List<PathNode>, List<Offset>> {
+    val toReturn = mutableListOf<PathNode>()
+    val toReturnPoints = mutableListOf<Offset>()
     var currPosition = Offset(0f, 0f)
 
-    val pathNodes = mutableListOf<PathNode>()
-    val pathMeasurer = PathMeasure()
-
     this.forEach { node ->
-        val start = currPosition
-        pathNodes.clear()
-        pathNodes.add(PathNode.MoveTo(currPosition.x, currPosition.y))
-
         when (node) {
-            PathNode.Close -> {}
-            is PathNode.CurveTo -> {
-                pathNodes.add(node)
-                currPosition = Offset(node.x3, node.y3)
-            }
-            is PathNode.HorizontalTo -> {
-                pathNodes.add(node)
-                currPosition = Offset(node.x, currPosition.y)
-            }
-
+            //Lines
             is PathNode.LineTo -> {
-                pathNodes.add(node)
                 currPosition = Offset(node.x, node.y)
-            }
-
-            is PathNode.MoveTo -> {
-                pathNodes.add(node)
-                currPosition = Offset(node.x, node.y)
-            }
-
-            is PathNode.QuadTo -> {
-                pathNodes.add(node)
-                currPosition = Offset(node.x2, node.y2)
-            }
-
-            is PathNode.ReflectiveCurveTo -> {
-                pathNodes.add(node)
-                currPosition = Offset(node.x2, node.y2)
-            }
-
-            is PathNode.ReflectiveQuadTo -> {
-                pathNodes.add(node)
-                currPosition = Offset(node.x, node.y)
-            }
-
-            is PathNode.RelativeCurveTo -> {
-                val x1 = currPosition.x + node.dx1
-                val y1 = currPosition.y + node.dy1
-                val x2 = currPosition.x + node.dx2
-                val y2 = currPosition.y + node.dy2
-                val x3 = currPosition.x + node.dx3
-                val y3 = currPosition.y + node.dy3
-                currPosition = Offset(x3, y3)
-                pathNodes.add(PathNode.CurveTo(x1, y1, x2, y2, x3, y3))
-            }
-
-            is PathNode.RelativeHorizontalTo -> {
-                val x = currPosition.x + node.dx
-                pathNodes.add(PathNode.LineTo(x, currPosition.y))
-                currPosition = Offset(x, currPosition.y)
+                toReturn.add(node)
+                toReturnPoints.add(currPosition)
             }
 
             is PathNode.RelativeLineTo -> {
                 val x = currPosition.x + node.dx
                 val y = currPosition.y + node.dy
                 currPosition = Offset(x, y)
-                pathNodes.add(PathNode.LineTo(x, y))
+                toReturn.add(PathNode.LineTo(x, y))
+                toReturnPoints.add(currPosition)
             }
 
-            is PathNode.RelativeMoveTo -> {
+            is PathNode.HorizontalTo -> {
+                currPosition = Offset(node.x, currPosition.y)
+                toReturn.add(PathNode.LineTo(node.x, currPosition.y))
+                toReturnPoints.add(currPosition)
+            }
+
+            is PathNode.RelativeHorizontalTo -> {
                 val x = currPosition.x + node.dx
-                val y = currPosition.y + node.dy
-                currPosition = Offset(x, y)
-                pathNodes.add(PathNode.MoveTo(x, y))
+                toReturn.add(PathNode.LineTo(x, currPosition.y))
+                currPosition = Offset(x, currPosition.y)
+                toReturnPoints.add(currPosition)
             }
 
-            is PathNode.RelativeQuadTo -> {
-                val x1 = currPosition.x + node.dx1
-                val y1 = currPosition.y + node.dy1
-                val x2 = currPosition.x + node.dx2
-                val y2 = currPosition.y + node.dy2
-                currPosition = Offset(x2, y2)
-                pathNodes.add(PathNode.QuadTo(x1, y1, x2, y2))
-            }
-
-            is PathNode.RelativeReflectiveCurveTo -> {
-                // Check the last command in toReturn
-                val prevNode = pathNodes.lastOrNull()
-                var prevX1 = 0f
-                var prevY1 = 0f
-
-                when (prevNode) {
-                    is PathNode.CurveTo -> {
-                        prevX1 = prevNode.x1
-                        prevY1 = prevNode.y1
-                    }
-
-                    is PathNode.RelativeCurveTo -> {
-                        prevX1 = currPosition.x - prevNode.dx1
-                        prevY1 = currPosition.y - prevNode.dy1
-                    }
-
-                    else -> {
-                        prevX1 = currPosition.x
-                        prevY1 = currPosition.y
-                    }
-                }
-
-                // Reflect previous control point around current position
-                val reflX1 = currPosition.x * 2 - prevX1
-                val reflY1 = currPosition.y * 2 - prevY1
-
-                // Calculate second control point and endpoint of the curve
-                val x2 = currPosition.x + node.dx1
-                val y2 = currPosition.y + node.dy1
-                val x3 = currPosition.x + node.dx2
-                val y3 = currPosition.y + node.dy2
-
-                // Add CurveTo command
-                pathNodes.add(PathNode.CurveTo(reflX1, reflY1, x2, y2, x3, y3))
-
-                // Update current position
-                currPosition = Offset(x3, y3)
-            }
-
-            is PathNode.RelativeReflectiveQuadTo -> {
-                // Check the last command in toReturn
-                val lastNode = pathNodes.lastOrNull()
-                var prevControlX = 0f
-                var prevControlY = 0f
-
-                when (lastNode) {
-                    is PathNode.QuadTo -> {
-                        prevControlX = lastNode.x1
-                        prevControlY = lastNode.y1
-                    }
-
-                    is PathNode.RelativeQuadTo -> {
-                        prevControlX = currPosition.x - lastNode.dx1
-                        prevControlY = currPosition.y - lastNode.dy1
-                    }
-
-                    else -> {
-                        // Default behavior if the last command isn't a quad curve
-                        prevControlX = currPosition.x
-                        prevControlY = currPosition.y
-                    }
-                }
-
-                // Reflect previous control point around current position
-                val reflX = currPosition.x * 2 - prevControlX
-                val reflY = currPosition.y * 2 - prevControlY
-
-                // Calculate the endpoint of the curve
-                val endX = currPosition.x + node.dx
-                val endY = currPosition.y + node.dy
-
-                // Add QuadTo command
-                pathNodes.add(PathNode.QuadTo(reflX, reflY, endX, endY))
-
-                // Update current position
-                currPosition = Offset(endX, endY)
+            is PathNode.VerticalTo -> {
+                currPosition = Offset(currPosition.x, node.y)
+                toReturn.add(PathNode.LineTo(currPosition.x, node.y))
+                toReturnPoints.add(currPosition)
             }
 
             is PathNode.RelativeVerticalTo -> {
                 val y = currPosition.y + node.dy
-                pathNodes.add(PathNode.LineTo(currPosition.x, y))
+                toReturn.add(PathNode.LineTo(currPosition.x, y))
                 currPosition = Offset(currPosition.x, y)
+                toReturnPoints.add(currPosition)
             }
 
-            is PathNode.VerticalTo -> {
-                pathNodes.add(PathNode.LineTo(currPosition.x, node.y))
-                currPosition = Offset(currPosition.x, node.y)
-            }
-
-            is PathNode.ArcTo -> {
-                pathNodes.add(node)
-                currPosition = Offset(node.arcStartX, node.arcStartY)
-            }
-
-            is PathNode.RelativeArcTo -> {
-                val arcStartX = currPosition.x + node.arcStartDx
-                val arcStartY = currPosition.y + node.arcStartDy
-                pathNodes.add(
-                    PathNode.ArcTo(
-                        horizontalEllipseRadius = node.horizontalEllipseRadius,
-                        verticalEllipseRadius = node.verticalEllipseRadius,
-                        theta = node.theta,
-                        isMoreThanHalf = node.isMoreThanHalf,
-                        isPositiveArc = node.isPositiveArc,
-                        arcStartX = arcStartX,
-                        arcStartY = arcStartY
-                    )
-                )
-                currPosition = Offset(arcStartX, arcStartY)
-            }
-        }
-        pathNodes.add(PathNode.Close)
-        val path = pathNodes.toPath()
-        pathMeasurer.setPath(path, false)
-        val distance = pathMeasurer.length
-        val end = currPosition
-        if(distance > 0){
-            toReturn.add(DrawSegment(start = start, end=end, distance = distance, pathNodes = pathNodes.toList()))
-        }
-    }
-    return toReturn
-}
-
-fun List<PathNode>.convertToAbsoluteCommands(): List<PathNode> {
-    val toReturn = mutableListOf<PathNode>()
-    var currPosition = Offset(0f, 0f)
-
-    this.forEach { node ->
-        when (node) {
-            PathNode.Close -> toReturn.add(node)
+            //Curves
             is PathNode.CurveTo -> {
                 currPosition = Offset(node.x3, node.y3)
                 toReturn.add(node)
-            }
-
-            is PathNode.HorizontalTo -> {
-                toReturn.add(PathNode.LineTo(node.x, currPosition.y))
-                currPosition = Offset(node.x, currPosition.y)
-            }
-
-            is PathNode.LineTo -> {
-                currPosition = Offset(node.x, node.y)
-                toReturn.add(node)
-            }
-
-            is PathNode.MoveTo -> {
-                currPosition = Offset(node.x, node.y)
-                toReturn.add(node)
-            }
-
-            is PathNode.QuadTo -> {
-                currPosition = Offset(node.x2, node.y2)
-                toReturn.add(node)
-            }
-
-            is PathNode.ReflectiveCurveTo -> {
-                currPosition = Offset(node.x2, node.y2)
-                toReturn.add(node)
-            }
-
-            is PathNode.ReflectiveQuadTo -> {
-                currPosition = Offset(node.x, node.y)
-                toReturn.add(node)
+                toReturnPoints.add(currPosition)
             }
 
             is PathNode.RelativeCurveTo -> {
@@ -306,26 +106,78 @@ fun List<PathNode>.convertToAbsoluteCommands(): List<PathNode> {
                 val y3 = currPosition.y + node.dy3
                 currPosition = Offset(x3, y3)
                 toReturn.add(PathNode.CurveTo(x1, y1, x2, y2, x3, y3))
+                toReturnPoints.add(currPosition)
             }
 
-            is PathNode.RelativeHorizontalTo -> {
-                val x = currPosition.x + node.dx
-                toReturn.add(PathNode.LineTo(x, currPosition.y))
-                currPosition = Offset(x, currPosition.y)
+            is PathNode.ReflectiveCurveTo -> {
+                when (val prevNode = toReturn.lastOrNull()) {
+                    is PathNode.CurveTo -> {
+                        val x1 = currPosition.x + (currPosition.x - prevNode.x2)
+                        val y1 = currPosition.y + (currPosition.y - prevNode.y2)
+                        val x2 = node.x1
+                        val y2 = node.y1
+                        val x3 = node.x2
+                        val y3 = node.y2
+
+                        toReturn.add(PathNode.CurveTo(x1, y1, x2, y2, x3, y3))
+                        currPosition = Offset(x3, y3)
+                        toReturnPoints.add(currPosition)
+                    }
+
+                    else -> {
+                        toReturn.add(
+                            PathNode.CurveTo(
+                                currPosition.x,
+                                currPosition.y,
+                                node.x1,
+                                node.y1,
+                                node.x2,
+                                node.y2
+                            )
+                        )
+                        currPosition = Offset(node.x2, node.y2)
+                        toReturnPoints.add(currPosition)
+                    }
+                }
             }
 
-            is PathNode.RelativeLineTo -> {
-                val x = currPosition.x + node.dx
-                val y = currPosition.y + node.dy
-                currPosition = Offset(x, y)
-                toReturn.add(PathNode.LineTo(x, y))
+            is PathNode.RelativeReflectiveCurveTo -> {
+                when (val prevNode = toReturn.lastOrNull()) {
+                    is PathNode.CurveTo -> {
+                        val x1 = currPosition.x + (currPosition.x - prevNode.x2)
+                        val y1 = currPosition.y + (currPosition.y - prevNode.y2)
+                        val x2 = currPosition.x + node.dx1
+                        val y2 = currPosition.y + node.dy1
+                        val x3 = currPosition.x + node.dx2
+                        val y3 = currPosition.y + node.dy2
+
+                        toReturn.add(PathNode.CurveTo(x1, y1, x2, y2, x3, y3))
+                        currPosition = Offset(x3, y3)
+                        toReturnPoints.add(currPosition)
+                    }
+
+                    else -> {
+                        toReturn.add(
+                            PathNode.CurveTo(
+                                currPosition.x,
+                                currPosition.y,
+                                currPosition.x + node.dx1,
+                                currPosition.y + node.dy1,
+                                currPosition.x + node.dx2,
+                                currPosition.y + node.dy2
+                            )
+                        )
+                        currPosition = Offset(currPosition.x + node.dx2, currPosition.y + node.dy2)
+                        toReturnPoints.add(currPosition)
+                    }
+                }
             }
 
-            is PathNode.RelativeMoveTo -> {
-                val x = currPosition.x + node.dx
-                val y = currPosition.y + node.dy
-                currPosition = Offset(x, y)
-                toReturn.add(PathNode.MoveTo(x, y))
+            //Quads
+            is PathNode.QuadTo -> {
+                currPosition = Offset(node.x2, node.y2)
+                toReturn.add(node)
+                toReturnPoints.add(currPosition)
             }
 
             is PathNode.RelativeQuadTo -> {
@@ -335,101 +187,70 @@ fun List<PathNode>.convertToAbsoluteCommands(): List<PathNode> {
                 val y2 = currPosition.y + node.dy2
                 currPosition = Offset(x2, y2)
                 toReturn.add(PathNode.QuadTo(x1, y1, x2, y2))
+                toReturnPoints.add(currPosition)
             }
 
-            is PathNode.RelativeReflectiveCurveTo -> {
-                // Check the last command in toReturn
-                val prevNode = toReturn.lastOrNull()
-                var prevX1 = 0f
-                var prevY1 = 0f
+            is PathNode.ReflectiveQuadTo -> {
+                when (val prevNode = toReturn.lastOrNull()) {
+                    is PathNode.QuadTo -> {
+                        val x1 = currPosition.x + (currPosition.x - prevNode.x1)
+                        val y1 = currPosition.y + (currPosition.y - prevNode.y1)
+                        val x2 = node.x
+                        val y2 = node.y
 
-                when (prevNode) {
-                    is PathNode.CurveTo -> {
-                        prevX1 = prevNode.x1
-                        prevY1 = prevNode.y1
-                    }
-
-                    is PathNode.RelativeCurveTo -> {
-                        prevX1 = currPosition.x - prevNode.dx1
-                        prevY1 = currPosition.y - prevNode.dy1
+                        toReturn.add(PathNode.QuadTo(x1, y1, x2, y2))
+                        currPosition = Offset(x2, y2)
+                        toReturnPoints.add(currPosition)
                     }
 
                     else -> {
-                        prevX1 = currPosition.x
-                        prevY1 = currPosition.y
+                        toReturn.add(
+                            PathNode.QuadTo(
+                                currPosition.x,
+                                currPosition.y,
+                                node.x,
+                                node.y
+                            )
+                        )
+                        currPosition = Offset(node.x, node.y)
+                        toReturnPoints.add(currPosition)
                     }
                 }
 
-                // Reflect previous control point around current position
-                val reflX1 = currPosition.x * 2 - prevX1
-                val reflY1 = currPosition.y * 2 - prevY1
-
-                // Calculate second control point and endpoint of the curve
-                val x2 = currPosition.x + node.dx1
-                val y2 = currPosition.y + node.dy1
-                val x3 = currPosition.x + node.dx2
-                val y3 = currPosition.y + node.dy2
-
-                // Add CurveTo command
-                toReturn.add(PathNode.CurveTo(reflX1, reflY1, x2, y2, x3, y3))
-
-                // Update current position
-                currPosition = Offset(x3, y3)
             }
 
             is PathNode.RelativeReflectiveQuadTo -> {
-                // Check the last command in toReturn
-                val lastNode = toReturn.lastOrNull()
-                var prevControlX = 0f
-                var prevControlY = 0f
-
-                when (lastNode) {
+                when (val prevNode = toReturn.lastOrNull()) {
                     is PathNode.QuadTo -> {
-                        prevControlX = lastNode.x1
-                        prevControlY = lastNode.y1
-                    }
+                        val x1 = currPosition.x + (currPosition.x - prevNode.x1)
+                        val y1 = currPosition.y + (currPosition.y - prevNode.y1)
+                        val x2 = currPosition.x + node.dx
+                        val y2 = currPosition.y + node.dy
 
-                    is PathNode.RelativeQuadTo -> {
-                        prevControlX = currPosition.x - lastNode.dx1
-                        prevControlY = currPosition.y - lastNode.dy1
+                        toReturn.add(PathNode.QuadTo(x1, y1, x2, y2))
+                        currPosition = Offset(x2, y2)
                     }
 
                     else -> {
-                        // Default behavior if the last command isn't a quad curve
-                        prevControlX = currPosition.x
-                        prevControlY = currPosition.y
+                        toReturn.add(
+                            PathNode.QuadTo(
+                                currPosition.x,
+                                currPosition.y,
+                                currPosition.x + node.dx,
+                                currPosition.y + node.dy
+                            )
+                        )
+                        currPosition = Offset(currPosition.x + node.dx, currPosition.y + node.dy)
                     }
                 }
-
-                // Reflect previous control point around current position
-                val reflX = currPosition.x * 2 - prevControlX
-                val reflY = currPosition.y * 2 - prevControlY
-
-                // Calculate the endpoint of the curve
-                val endX = currPosition.x + node.dx
-                val endY = currPosition.y + node.dy
-
-                // Add QuadTo command
-                toReturn.add(PathNode.QuadTo(reflX, reflY, endX, endY))
-
-                // Update current position
-                currPosition = Offset(endX, endY)
+                toReturnPoints.add(currPosition)
             }
 
-            is PathNode.RelativeVerticalTo -> {
-                val y = currPosition.y + node.dy
-                toReturn.add(PathNode.LineTo(currPosition.x, y))
-                currPosition = Offset(currPosition.x, y)
-            }
-
-            is PathNode.VerticalTo -> {
-                toReturn.add(PathNode.LineTo(currPosition.x, node.y))
-                currPosition = Offset(currPosition.x, node.y)
-            }
-
+            //Arcs
             is PathNode.ArcTo -> {
                 toReturn.add(node)
                 currPosition = Offset(node.arcStartX, node.arcStartY)
+                toReturnPoints.add(currPosition)
             }
 
             is PathNode.RelativeArcTo -> {
@@ -447,10 +268,31 @@ fun List<PathNode>.convertToAbsoluteCommands(): List<PathNode> {
                     )
                 )
                 currPosition = Offset(arcStartX, arcStartY)
+                toReturnPoints.add(currPosition)
+            }
+
+            //Other
+            is PathNode.MoveTo -> {
+                currPosition = Offset(node.x, node.y)
+                toReturn.add(node)
+                toReturnPoints.add(currPosition)
+            }
+
+            is PathNode.RelativeMoveTo -> {
+                val x = currPosition.x + node.dx
+                val y = currPosition.y + node.dy
+                currPosition = Offset(x, y)
+                toReturn.add(PathNode.MoveTo(x, y))
+                toReturnPoints.add(currPosition)
+            }
+
+            PathNode.Close -> {
+                toReturn.add(node)
+                toReturnPoints.add(currPosition)
             }
         }
     }
-    return toReturn
+    return Pair(toReturn.toList(), toReturnPoints.toList())
 }
 
 fun List<PathNode>.splitIntoClosedPaths(): List<List<PathNode>> {
@@ -686,9 +528,3 @@ fun Path.toScaledPath(bounds: Rect, targetWidth: Int, targetHeight: Int): Path {
     return androidPath.asComposePath()
 }
 
-data class DrawSegment(
-    val start: Offset,
-    val end: Offset,
-    val distance: Float,
-    val pathNodes: List<PathNode>
-)

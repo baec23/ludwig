@@ -58,10 +58,14 @@ fun PathTestScreen() {
         "m480-120-58-52q-101-91-167-157T150-447.5Q111-500 95.5-544T80-634q0-94 63-157t157-63q52 0 99 22t81 62q34-40 81-62t99-22q94 0 157 63t63 157q0 46-15.5 90T810-447.5Q771-395 705-329T538-172l-58 52Zm0-108q96-86 158-147.5t98-107q36-45.5 50-81t14-70.5q0-60-40-100t-100-40q-47 0-87 26.5T518-680h-76q-15-41-55-67.5T300-774q-60 0-100 40t-40 100q0 35 14 70.5t50 81q36 45.5 98 107T480-228Zm0-273Z"
     val testPathString =
         "M10,10 L50,60 A10,20 45 0,1 80,70 Q100,90 120,100 T140,110 L160,120 A5,10 30 0,0 180,130 Q200,150 220,160 T240,170 L260,180 A15,25 60 1,1 280,190 Q300,210 320,220 T340,230 Z"
-    val pathString = checkPathString
+    val addString = "M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"
+    val closeString = "m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
+
+    val pathString = addString
 
     val path = PathParser().parsePathString(pathString)
-    val pathNodes = path.toNodes().convertToAbsoluteCommands()
+    val pathDataNodes = androidx.core.graphics.PathParser.createNodesFromPathData(pathString)
+    val pathNodes = path.toNodes().convertToAbsoluteCommands().first
     val drawSegments = path.toNodes().toDrawSegments()
     val bounds = path.toPath().getBounds()
     val aspectRatio = bounds.width / bounds.height
@@ -138,6 +142,7 @@ fun PathTestScreen() {
                                 pathToDraw,
                                 startWithMoveTo = true
                             )
+
                             drawPath(pathToDraw, color = Color.Black, style = Stroke(width = 10f))
                         }
                     }

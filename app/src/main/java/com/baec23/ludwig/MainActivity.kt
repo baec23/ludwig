@@ -30,6 +30,7 @@ import com.baec23.ludwig.component.section.DisplaySection
 import com.baec23.ludwig.component.section.ExpandableDisplaySection
 import com.baec23.ludwig.component.timepicker.TimePicker
 import com.baec23.ludwig.ui.PathTestScreen
+import com.baec23.ludwig.ui.TestScreen2
 import com.baec23.ludwig.ui.theme.LudwigTheme
 
 class MainActivity : ComponentActivity() {
@@ -43,7 +44,7 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    PathTestScreen()
+                    TestScreen2()
 //                    Column(
 //                        modifier = Modifier
 //                            .fillMaxWidth()
