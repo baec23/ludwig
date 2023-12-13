@@ -110,7 +110,9 @@ fun ExpandableDisplaySection(
     contentPadding: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 16.dp),
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val arrowRotation by animateFloatAsState(targetValue = if (isExpanded) 90f else 0f)
+    val arrowRotation by animateFloatAsState(
+        targetValue = if (isExpanded) 90f else 0f, label = "arrowRotation",
+    )
     val textHeightDp = with(LocalDensity.current) { headerTextStyle.lineHeight.toDp() }
     Column(modifier = modifier) {
         //Header

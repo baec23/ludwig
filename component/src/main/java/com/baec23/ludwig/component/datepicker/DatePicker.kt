@@ -150,7 +150,7 @@ private fun DatePickerScope.DefaultHeader(
         Text(text = "Select date", style = MaterialTheme.typography.labelMedium)
         Spacer(modifier = Modifier.height(36.dp))
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            AnimatedContent(targetState = selectedDate) { sDate ->
+            AnimatedContent(targetState = selectedDate, label = "datePicker") { sDate ->
                 val dayOfWeek = sDate.dayOfWeek.getDisplayName(TextStyle.SHORT, locale)
                 val month = sDate.month.getDisplayName(TextStyle.SHORT, locale)
                 val dayOfMonth = sDate.dayOfMonth
@@ -241,7 +241,7 @@ private fun DatePickerScope.DefaultContent() {
                     } else {
                         slideInHorizontally { fullWidth -> -fullWidth } with slideOutHorizontally { fullWidth -> fullWidth } + fadeOut()
                     }
-                }) { vDate ->
+                }, label = "yearSelection") { vDate ->
                     DatePickerCalendar(selectedDate = selectedDate, viewingDate = vDate) {
                         setSelectedDate(it)
                     }
@@ -263,7 +263,9 @@ private fun DatePickerCalendarControls(
     val locale = LocalContext.current.resources.configuration.locales[0]
 
 
-    val arrowIconRotation by animateFloatAsState(targetValue = if (isYearSelectionActive) 180f else 360f)
+    val arrowIconRotation by animateFloatAsState(targetValue = if (isYearSelectionActive) 180f else 360f,
+        label = "arrowIconRotation"
+    )
 
     Row(
         modifier = Modifier
@@ -286,7 +288,7 @@ private fun DatePickerCalendarControls(
                     } else {
                         slideInHorizontally { fullWidth -> -fullWidth } + fadeIn() with slideOutHorizontally { fullWidth -> fullWidth } + fadeOut()
                     }
-                }) { vDate ->
+                }, label = "datePickerControls") { vDate ->
                     val month = vDate.month.getDisplayName(TextStyle.FULL, locale)
                     val year = vDate.year
                     Text(text = "$month $year", style = MaterialTheme.typography.labelLarge)

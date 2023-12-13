@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalAnimationApi::class)
-
 package com.baec23.ludwig.component.button
 
 import androidx.compose.animation.AnimatedContent
@@ -46,15 +44,6 @@ import androidx.compose.ui.unit.toSize
 import com.baec23.ludwig.component.misc.LoadingDotsIndicator
 import java.util.concurrent.CancellationException
 
-fun Test(): String {
-
-    var a: String? = null
-    a?.let { return a }
-    throw Exception()
-
-}
-
-
 @Composable
 fun StatefulButton(
     modifier: Modifier = Modifier,
@@ -92,6 +81,7 @@ fun StatefulButton(
     )
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun StatefulButton(
     modifier: Modifier = Modifier,
@@ -123,6 +113,7 @@ fun StatefulButton(
 
             ButtonAnimationState.Pressed -> tween(25)
         },
+        label = "animatedBorderWidth",
     )
 
     val animatedContentScale by animateFloatAsState(
@@ -138,6 +129,7 @@ fun StatefulButton(
 
             ButtonAnimationState.Pressed -> tween(25)
         },
+        label = "animatedContentScale",
     )
     //endregion
     Box(
@@ -198,7 +190,7 @@ fun StatefulButton(
             targetState = state,
             transitionSpec = {
                 scaleIn() with scaleOut()
-            }
+            }, label = "button"
         ) {
             when (it) {
                 ButtonState.Enabled, ButtonState.Disabled -> content()
