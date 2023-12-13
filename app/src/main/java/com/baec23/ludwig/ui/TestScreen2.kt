@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Slider
 import androidx.compose.runtime.Composable
@@ -90,7 +92,7 @@ fun TestScreen2() {
                 modifier = Modifier
                     .size(200.dp)
                     .padding(12.dp),
-                startSource = VectorSource(Icons.Outlined.CheckCircle),
+                startSource = VectorSource(Icons.Outlined.Delete),
                 endSource = VectorSource(Icons.Outlined.Settings),
                 progress = animationProgress.value,
                 strokeWidth = 20f,

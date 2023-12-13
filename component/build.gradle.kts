@@ -10,7 +10,6 @@ android {
 
     defaultConfig {
         minSdk = 26
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -24,15 +23,28 @@ android {
             )
         }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
     buildFeatures {
         compose = true
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
     }
 }
 
@@ -45,14 +57,15 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(project(":core"))
 }
-//
-//publishing {
-//    publications {
-//        create<MavenPublication>("maven") {
-//            groupId = "com.baec23.ludwig"
-//            artifactId = "component"
-//
-//            from(components["release"])
-//        }
-//    }
-//}
+
+afterEvaluate{
+    publishing {
+        publications {
+            create<MavenPublication>("maven") {
+                groupId = "com.baec23.ludwig"
+                artifactId = "component"
+                from(components["release"])
+            }
+        }
+    }
+}
