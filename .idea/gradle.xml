@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/component" />
             <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/morpher" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

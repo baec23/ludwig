@@ -9,7 +9,15 @@ import androidx.compose.ui.graphics.vector.PathNode
 import androidx.compose.ui.graphics.vector.PathParser
 import com.baec23.ludwig.morpher.model.PathSegment
 import com.baec23.ludwig.morpher.model.interpolate
+import java.lang.Math.pow
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.ceil
 import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
+import kotlin.math.tan
 
 /**
  * Splits a path (defined by List<PathNode>) into visual subpaths.
@@ -729,50 +737,46 @@ fun List<PathNode>.toPathSegments(): List<PathSegment> {
             is PathNode.ArcTo -> {
                 val arcCurves = approximateArcToCurves(
                     start = currPosition,
-                    radius = node.horizontalEllipseRadius, // For circular arc
-                    sweepAngle = node.theta,
+                    verticalEllipseRadius = node.verticalEllipseRadius,
+                    horizontalEllipseRadius = node.horizontalEllipseRadius,
+                    isPositiveArc = node.isPositiveArc,
+                    isMoreThanHalf = node.isMoreThanHalf,
+                    theta = node.theta,
                     end = Offset(node.arcStartX, node.arcStartY)
                 )
-                currPosition = Offset(node.arcStartX, node.arcStartY)
-                arcCurves.forEach { curve ->
-                    toReturn.add(
-                        PathSegment(
-                            startPosition = startOffset,
-                            endPosition = currPosition,
-                            pathNode = curve
-                        )
-                    )
+                arcCurves.forEach{
+                    toReturn.add(PathSegment(
+                        startPosition = currPosition,
+                        endPosition = Offset(it.x3, it.y3),
+                        pathNode = it
+                    ))
+                    currPosition = Offset(it.x3, it.y3)
                 }
-                nodeToAdd = PathNode.Close
+                nodeToAdd = PathNode.Close // already added to toReturn manually
             }
 
             is PathNode.RelativeArcTo -> {
-                // Convert relative coordinates to absolute
-                val absoluteEndX = currPosition.x + node.arcStartDx
-                val absoluteEndY = currPosition.y + node.arcStartDy
+                val endX = currPosition.x + node.arcStartDx
+                val endY = currPosition.y + node.arcStartDy
 
-                // Approximate the arc with cubic bezier curves
                 val arcCurves = approximateArcToCurves(
                     start = currPosition,
-                    radius = node.horizontalEllipseRadius, // Assuming circular arc for simplicity
-                    sweepAngle = node.theta,
-                    end = Offset(absoluteEndX, absoluteEndY)
+                    verticalEllipseRadius = node.verticalEllipseRadius,
+                    horizontalEllipseRadius = node.horizontalEllipseRadius,
+                    isPositiveArc = node.isPositiveArc,
+                    isMoreThanHalf = node.isMoreThanHalf,
+                    theta = node.theta,
+                    end = Offset(endX, endY)
                 )
-
-                // Update the current position
-                currPosition = Offset(absoluteEndX, absoluteEndY)
-
-                // Add each curve as a segment
-                arcCurves.forEach { curve ->
-                    toReturn.add(
-                        PathSegment(
-                            startPosition = startOffset,
-                            endPosition = currPosition,
-                            pathNode = curve
-                        )
-                    )
+                arcCurves.forEach{
+                    toReturn.add(PathSegment(
+                        startPosition = currPosition,
+                        endPosition = Offset(it.x3, it.y3),
+                        pathNode = it
+                    ))
+                    currPosition = Offset(it.x3, it.y3)
                 }
-                nodeToAdd = PathNode.Close
+                nodeToAdd = PathNode.Close // already added to toReturn manually
             }
 
             //Other
@@ -806,40 +810,6 @@ fun List<PathNode>.toPathSegments(): List<PathSegment> {
     return toReturn.toList()
 }
 
-private fun approximateArcToCurves(
-    start: Offset,
-    radius: Float,
-    sweepAngle: Float,
-    end: Offset
-): List<PathNode.CurveTo> {
-    // This function will approximate the arc by a single cubic Bezier curve.
-    // For larger arcs, it's recommended to divide the arc into smaller segments.
-
-    // Midpoint calculation
-    val midPointX = (start.x + end.x) / 2f
-    val midPointY = (start.y + end.y) / 2f
-
-    // Angle in radians
-    val angleRad = Math.toRadians(sweepAngle.toDouble() / 2)
-
-    // Distance from midpoint to arc midpoint
-    val distToMidArc = radius * (1 - cos(angleRad))
-
-    // Control points distance
-    val controlDist = (4 / 3) * distToMidArc
-
-    val control1 = Offset(
-        (start.x + controlDist * (midPointX - start.x) / distToMidArc).toFloat(),
-        (start.y + controlDist * (midPointY - start.y) / distToMidArc).toFloat()
-    )
-
-    val control2 = Offset(
-        (end.x + controlDist * (midPointX - end.x) / distToMidArc).toFloat(),
-        (end.y + controlDist * (midPointY - end.y) / distToMidArc).toFloat()
-    )
-
-    return listOf(PathNode.CurveTo(control1.x, control1.y, control2.x, control2.y, end.x, end.y))
-}
 fun List<PathNode>.calcLength(): Float {
     val path = PathParser().addPathNodes(this).toPath()
     val pathMeasurer = PathMeasure()

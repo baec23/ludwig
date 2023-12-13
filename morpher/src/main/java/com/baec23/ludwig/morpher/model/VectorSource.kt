@@ -6,28 +6,33 @@ import androidx.compose.ui.graphics.vector.PathNode
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.graphics.vector.VectorPath
 
-class VectorSource() {
-    var pathData: List<PathNode> = listOf()
-    var bounds: Rect = Rect.Zero
 
-    constructor(pathString: String) : this() {
-        val pathParser = PathParser().parsePathString(pathString)
-        bounds = pathParser.toPath().getBounds()
-        pathData = pathParser.toNodes()
-    }
+data class VectorSource(
+    val pathData: List<PathNode>,
+    val bounds: Rect
+) {
+    companion object {
+        fun fromPathString(pathString: String): VectorSource {
+            val pathParser = PathParser().parsePathString(pathString)
+            val bounds = pathParser.toPath().getBounds()
+            val pathData = pathParser.toNodes()
+            return VectorSource(pathData, bounds)
+        }
 
-    constructor(imageVector: ImageVector) : this() {
-        pathData = imageVector.root.filterIsInstance<VectorPath>().flatMap { it.pathData }
-        val pathParser = PathParser()
-        pathParser.addPathNodes(pathData)
-        bounds = pathParser.toPath().getBounds()
+        fun fromImageVector(imageVector: ImageVector): VectorSource {
+            val pathData = imageVector.root.filterIsInstance<VectorPath>().flatMap { it.pathData }
+            val pathParser = PathParser()
+            pathParser.addPathNodes(pathData)
+            val bounds = pathParser.toPath().getBounds()
+            return VectorSource(pathData, bounds)
+        }
 
-    }
-
-    constructor(vectorPath: VectorPath) : this() {
-        pathData = vectorPath.pathData
-        val pathParser = PathParser()
-        pathParser.addPathNodes(pathData)
-        bounds = pathParser.toPath().getBounds()
+        fun fromVectorPath(vectorPath: VectorPath): VectorSource {
+            val pathData = vectorPath.pathData
+            val pathParser = PathParser()
+            pathParser.addPathNodes(pathData)
+            val bounds = pathParser.toPath().getBounds()
+            return VectorSource(pathData, bounds)
+        }
     }
 }
