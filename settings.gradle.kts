@@ -1,9 +1,11 @@
 pluginManagement {
     repositories {
+        gradlePluginPortal()
         google()
         mavenCentral()
-        gradlePluginPortal()
-        maven { url 'https://jitpack.io' }
+        maven {
+            url = uri("https://jitpack.io")
+        }
     }
 }
 dependencyResolutionManagement {
@@ -11,10 +13,13 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://jitpack.io' }
+        maven {
+            url = uri("https://jitpack.io")
+        }
     }
 }
 rootProject.name = "Ludwig"
-include ':app'
-include ':component'
-include ':core'
+include (":app")
+include (":component")
+include (":core")
+include (":morpher")
