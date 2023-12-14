@@ -1,5 +1,22 @@
-# Ludwig
-A UI component library written 100% in Compose
+# Ludwig - A Jetpack Compose UI Library
+## Installation
+### Add JitPack.io repository (settings.gradle.kts)
+```
+repositories {
+    gradlePluginPortal()
+    google()
+    mavenCentral()
+    maven {
+        url = uri("https://jitpack.io")
+    }
+}
+```
+### Add Gradle dependency (build.gradle.kts (app))
+```
+dependencies {
+    implementation "com.github.baec23:ludwig:1.0.1"
+}
+```
 
 ## Component Showcase
 ### DisplaySection / ExpandableDisplaySection / PreferenceSection
