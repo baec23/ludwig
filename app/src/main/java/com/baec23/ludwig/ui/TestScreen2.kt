@@ -1,58 +1,43 @@
 package com.baec23.ludwig.ui
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.EaseInBack
-import androidx.compose.animation.core.EaseInExpo
-import androidx.compose.animation.core.EaseInOutBounce
 import androidx.compose.animation.core.EaseInOutExpo
-import androidx.compose.animation.core.EaseInQuad
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AccountCircle
-import androidx.compose.material.icons.rounded.FavoriteBorder
-import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material.icons.rounded.Share
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.outlined.Create
+import androidx.compose.material.icons.outlined.Face
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PointMode
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.PathNode
-import androidx.compose.ui.graphics.vector.toPath
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.baec23.ludwig.R
-import com.baec23.ludwig.component.section.DisplaySection
-import com.baec23.ludwig.morpher.component.AnimatedVector
-import com.baec23.ludwig.morpher.model.VectorSource
-import kotlin.random.Random
+import com.baec23.ludwig.core.fadingLazy.FadingLazyVerticalGrid
+import com.baec23.ludwig.morpher.component.AnimatedMorphVector
+import com.baec23.ludwig.morpher.model.morpher.VectorSource
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -62,6 +47,7 @@ fun TestScreen2() {
     val worldCursivePathString =
         "M25.592 63.704C25.08 63.704 24.664 63.608 24.344 63.416C24.024 63.288 23.896 62.968 23.96 62.456C23.96 62.264 24.056 61.976 24.248 61.592C24.44 61.208 24.568 60.92 24.632 60.728C24.952 59.832 25.24 58.936 25.496 58.04C25.752 57.08 26.008 56.184 26.264 55.352C27.16 51.832 27.992 48.344 28.76 44.888C29.528 41.368 30.136 37.848 30.584 34.328C30.712 33.432 30.808 32.408 30.872 31.256C30.936 30.04 30.968 28.76 30.968 27.416C30.968 24.344 30.648 21.08 30.008 17.624C29.368 14.168 28.12 11.352 26.264 9.17599H18.968C18.008 9.17599 16.664 9.24 14.936 9.368C13.272 9.496 11.544 9.784 9.752 10.232C8.024 10.68 6.584 11.416 5.432 12.44C4.28 13.464 3.768 14.84 3.896 16.568C3.96 17.08 4.152 17.784 4.472 18.68C4.792 19.512 5.016 20.024 5.144 20.216L4.088 20.984C3.704 20.28 3.224 19.48 2.648 18.584C2.072 17.624 1.56 16.696 1.112 15.8C0.664 14.904 0.408 14.232 0.344 13.784C0.28 13.144 0.312 12.312 0.44 11.288C0.568 10.264 1.08 9.368 1.976 8.6C2.936 7.768 4.248 7.224 5.912 6.96799C7.64 6.712 9.4 6.584 11.192 6.584C12.92 6.584 14.584 6.648 16.184 6.776C17.784 6.904 19.096 6.96799 20.12 6.96799C20.12 6.96799 20.856 6.96799 22.328 6.96799C23.8 6.96799 25.656 6.96799 27.896 6.96799C30.2 6.904 32.632 6.872 35.192 6.872C37.752 6.872 40.088 6.872 42.2 6.872L40.184 9.368C38.264 9.368 36.344 9.368 34.424 9.368C32.568 9.304 30.68 9.272 28.76 9.272C30.808 10.616 32.312 12.376 33.272 14.552C34.296 16.728 34.968 19 35.288 21.368C35.608 23.736 35.768 25.944 35.768 27.992C35.768 28.824 35.736 29.624 35.672 30.392C35.672 31.16 35.672 31.832 35.672 32.408C35.544 35.416 35.128 39.032 34.424 43.256C33.72 47.48 32.824 51.48 31.736 55.256C33.848 52.312 36.216 48.824 38.84 44.792C41.528 40.696 44.536 36.408 47.864 31.928C51.256 27.384 54.936 23 58.904 18.776C60.504 17.112 62.2 15.416 63.992 13.688C65.784 11.96 67.704 10.52 69.752 9.368C71.8 8.216 74.008 7.64 76.376 7.64C78.424 7.64 79.992 7.96 81.08 8.6L80.504 9.656C80.248 9.592 79.992 9.56 79.736 9.56C79.544 9.496 79.288 9.464 78.968 9.464C77.176 9.464 75.256 10.008 73.208 11.096C71.224 12.184 69.688 13.272 68.6 14.36C66.616 16.344 65.08 18.712 63.992 21.464C62.904 24.152 62.104 27.032 61.592 30.104C61.144 33.112 60.792 36.184 60.536 39.32C60.28 42.392 60.024 45.304 59.768 48.056C59.576 50.808 59.192 53.208 58.616 55.256C61.24 51.544 64.472 47.128 68.312 42.008C72.216 36.888 76.664 31.576 81.656 26.072C86.648 20.504 92.12 15.224 98.072 10.232C99.288 9.208 100.856 8.056 102.776 6.776C104.76 5.496 106.84 4.408 109.016 3.512C111.256 2.552 113.368 2.07199 115.352 2.07199C117.208 2.07199 118.488 2.392 119.192 3.032C119.96 3.672 120.344 4.504 120.344 5.528C120.344 6.744 119.96 8.088 119.192 9.56C118.488 11.032 117.944 12.248 117.56 13.208C117.496 13.4 117.208 13.528 116.696 13.592C116.184 13.656 115.96 13.56 116.024 13.304C116.152 12.792 116.28 12.184 116.408 11.48C116.6 10.712 116.696 9.944 116.696 9.17599C116.696 8.152 116.504 7.224 116.12 6.392C115.736 5.56 115 5.08 113.912 4.952C113.72 4.888 113.528 4.856 113.336 4.856C113.144 4.856 112.952 4.856 112.76 4.856C110.968 4.856 109.016 5.496 106.904 6.776C104.792 7.992 102.36 9.72 99.608 11.96C94.232 16.248 89.08 20.984 84.152 26.168C79.224 31.288 74.552 36.664 70.136 42.296C67.832 45.176 65.592 48.088 63.416 51.032C61.24 53.976 59.224 57.048 57.368 60.248C57.24 60.504 57.112 60.792 56.984 61.112C56.92 61.496 56.824 61.784 56.696 61.976C56.568 62.104 56.184 62.296 55.544 62.552C54.904 62.872 54.264 63.128 53.624 63.32C53.048 63.576 52.664 63.704 52.472 63.704C51.96 63.704 51.544 63.608 51.224 63.416C50.904 63.288 50.776 62.968 50.84 62.456C50.84 62.264 50.936 61.976 51.128 61.592C51.32 61.208 51.448 60.92 51.512 60.728C51.832 59.832 52.12 58.936 52.376 58.04C52.632 57.08 52.888 56.184 53.144 55.352C53.912 52.536 54.456 49.56 54.776 46.424C55.16 43.288 55.512 40.152 55.832 37.016C56.216 33.816 56.792 30.744 57.56 27.8C58.328 24.856 59.512 22.2 61.112 19.832C59.832 20.6 58.008 22.488 55.64 25.496C53.272 28.44 50.392 32.024 47 36.248C45.848 37.656 44.568 39.416 43.16 41.528C41.752 43.576 40.312 45.752 38.84 48.056C37.432 50.296 36.056 52.504 34.712 54.68C33.432 56.792 32.344 58.648 31.448 60.248C31.32 60.504 31.192 60.792 31.064 61.112C31 61.496 30.904 61.784 30.776 61.976C30.648 62.104 30.168 62.296 29.336 62.552C28.568 62.872 27.8 63.128 27.032 63.32C26.264 63.576 25.784 63.704 25.592 63.704ZM89.3938 59.192C88.3698 59.192 87.4418 59 86.6098 58.616C85.8418 58.168 85.4578 57.24 85.4578 55.832C85.4578 53.592 86.0338 51.352 87.1858 49.112C88.3378 46.808 89.5218 44.792 90.7378 43.064C91.8258 41.592 93.0418 40.216 94.3858 38.936C95.7938 37.592 97.2978 36.44 98.8978 35.48C99.9218 34.84 101.298 34.168 103.026 33.464C104.818 32.696 106.322 32.312 107.538 32.312C108.562 32.312 109.458 32.6 110.226 33.176C110.994 33.688 111.378 34.648 111.378 36.056C111.378 38.232 110.802 40.472 109.65 42.776C108.562 45.016 107.41 47 106.194 48.728C105.618 49.496 105.042 50.232 104.466 50.936C103.89 51.576 103.25 52.248 102.546 52.952C104.914 52.952 107.09 52.28 109.074 50.936C111.058 49.528 112.786 47.832 114.258 45.848L114.45 45.656C114.642 45.656 114.738 45.848 114.738 46.232C114.738 46.68 114.61 47.096 114.354 47.48C113.074 49.272 111.474 50.872 109.554 52.28C107.634 53.624 105.458 54.296 103.026 54.296C102.77 54.296 102.514 54.296 102.258 54.296C102.002 54.296 101.746 54.264 101.49 54.2C97.9058 57.528 93.8738 59.192 89.3938 59.192ZM91.8898 57.56C92.7858 57.56 93.7458 57.24 94.7698 56.6C95.8578 55.96 96.6898 55.352 97.2657 54.776C98.3538 53.688 99.3458 52.536 100.242 51.32C101.138 50.04 101.97 48.76 102.738 47.48C103.634 45.944 104.53 44.12 105.426 42.008C106.322 39.896 106.77 37.912 106.77 36.056C106.77 34.584 106.258 33.848 105.234 33.848C104.402 33.848 103.378 34.2 102.162 34.904C101.01 35.608 100.146 36.248 99.5698 36.824C97.3938 39.064 95.5698 41.496 94.0978 44.12C93.2658 45.592 92.3698 47.32 91.4098 49.304C90.4498 51.288 89.9698 53.112 89.9698 54.776C89.9698 55.032 89.9698 55.288 89.9698 55.544C90.0338 55.736 90.0978 55.96 90.1618 56.216C90.4178 57.112 90.9938 57.56 91.8898 57.56ZM113.84 60.344C113.584 60.344 113.584 60.088 113.84 59.576C114.16 59 114.448 58.36 114.704 57.656C115.024 56.952 115.344 56.184 115.664 55.352C116.304 53.816 117.008 52.088 117.776 50.168C118.544 48.248 119.28 46.392 119.984 44.6C120.688 42.744 121.296 41.176 121.808 39.896C122.384 38.552 122.768 37.688 122.96 37.304C122.064 38.264 120.976 39.48 119.696 40.952C118.48 42.36 117.328 43.736 116.24 45.08C115.152 46.424 114.32 47.48 113.744 48.248C113.552 48.504 113.392 48.632 113.264 48.632C113.136 48.632 113.072 48.472 113.072 48.152C113.072 47.64 113.232 47.16 113.552 46.712C114.768 45.176 116.112 43.448 117.584 41.528C119.12 39.608 120.496 37.848 121.712 36.248C122.928 34.584 123.696 33.496 124.016 32.984C124.72 32.856 125.744 32.664 127.088 32.408C128.496 32.152 129.456 31.8 129.968 31.352C130.16 31.16 130.352 31.064 130.544 31.064C130.672 31.064 130.736 31.192 130.736 31.448C130.8 31.64 130.736 31.864 130.544 32.12C130.16 32.504 129.584 33.336 128.816 34.616C128.112 35.896 127.312 37.368 126.416 39.032C125.52 40.696 124.656 42.296 123.824 43.832C124.464 42.872 125.296 41.752 126.32 40.472C127.408 39.128 128.592 37.848 129.872 36.632C131.152 35.352 132.432 34.296 133.712 33.464C135.056 32.632 136.304 32.216 137.456 32.216C138.288 32.216 138.992 32.408 139.568 32.792C140.144 33.112 140.592 33.72 140.912 34.616C141.104 35.064 141.2 35.576 141.2 36.152C141.2 37.24 140.912 38.296 140.336 39.32C139.824 40.28 139.44 41.016 139.184 41.528C139.12 41.72 138.896 41.912 138.512 42.104C138.128 42.232 137.968 42.168 138.032 41.912C138.096 41.592 138.128 41.272 138.128 40.952C138.192 40.632 138.224 40.28 138.224 39.896C138.224 38.808 138 37.816 137.552 36.92C137.168 36.024 136.432 35.576 135.344 35.576C134.32 35.576 133.072 36.216 131.6 37.496C130.128 38.776 128.656 40.248 127.184 41.912C125.328 44.088 123.856 46.168 122.768 48.152C121.68 50.072 120.784 51.96 120.08 53.816C119.696 54.84 119.312 55.864 118.928 56.888C118.544 57.848 118.256 58.616 118.064 59.192C117.232 59.256 116.4 59.448 115.568 59.768C114.736 60.152 114.16 60.344 113.84 60.344ZM145.756 59.192C143.836 59.192 142.524 58.744 141.82 57.848C141.116 56.888 140.764 55.736 140.764 54.392C140.764 52.6 141.148 50.68 141.916 48.632C142.748 46.584 143.42 44.984 143.932 43.832C143.1 44.728 142.3 45.592 141.532 46.424C140.764 47.256 140.22 47.864 139.9 48.248C139.708 48.504 139.548 48.632 139.42 48.632C139.292 48.632 139.228 48.472 139.228 48.152C139.228 47.64 139.388 47.16 139.708 46.712C140.604 45.56 141.628 44.344 142.78 43.064C143.932 41.784 145.052 40.44 146.14 39.032C147.42 36.664 148.828 33.912 150.364 30.776C151.964 27.576 153.596 24.312 155.26 20.984C156.988 17.592 158.652 14.488 160.252 11.672C161.916 8.792 163.388 6.488 164.668 4.76C165.756 4.312 166.78 3.736 167.74 3.032C168.764 2.328 169.756 1.688 170.716 1.112C171.74 0.471996 172.796 0.151997 173.884 0.151997C174.588 0.151997 175.1 0.343996 175.42 0.727995C175.804 1.112 176.06 1.56 176.188 2.07199C176.252 2.264 176.284 2.616 176.284 3.128C176.284 4.6 175.772 6.392 174.748 8.504C173.788 10.616 172.636 12.696 171.292 14.744C170.012 16.728 168.892 18.36 167.932 19.64C165.372 23.224 162.748 26.488 160.06 29.432C157.372 32.312 154.94 34.744 152.764 36.728C150.652 38.648 149.116 40.056 148.156 40.952C147.708 41.784 147.164 42.904 146.524 44.312C145.948 45.656 145.436 47.096 144.988 48.632C144.54 50.104 144.316 51.48 144.316 52.76C144.316 53.848 144.572 54.776 145.084 55.544C145.596 56.248 146.46 56.6 147.676 56.6C147.868 56.6 148.06 56.6 148.252 56.6C148.444 56.6 148.668 56.568 148.924 56.504C150.012 56.312 151.196 55.704 152.476 54.68C153.756 53.656 155.036 52.472 156.316 51.128C157.596 49.784 158.748 48.504 159.772 47.288C160.22 46.776 160.636 46.296 161.02 45.848C161.404 45.336 161.66 44.984 161.788 44.792C162.236 45.24 162.204 45.816 161.692 46.52C161.244 47.16 160.86 47.704 160.54 48.152C160.092 48.728 159.452 49.528 158.62 50.552C157.788 51.512 156.828 52.568 155.74 53.72C154.524 54.936 153.02 56.152 151.228 57.368C149.436 58.584 147.612 59.192 145.756 59.192ZM149.788 37.112C151.772 35.448 154.268 33.08 157.276 30.008C160.348 26.872 163.356 23.096 166.3 18.68C166.62 18.168 167.132 17.304 167.836 16.088C168.604 14.872 169.372 13.496 170.14 11.96C170.972 10.36 171.676 8.824 172.252 7.352C172.828 5.816 173.116 4.504 173.116 3.41599C173.116 2.392 172.828 1.88 172.252 1.88C171.548 1.88 170.62 2.488 169.468 3.704C168.124 5.112 166.588 7.192 164.86 9.944C163.196 12.632 161.436 15.64 159.58 18.968C157.724 22.296 155.932 25.56 154.204 28.76C152.54 31.96 151.068 34.744 149.788 37.112ZM173.008 59.288C172.368 59.288 171.824 59.16 171.376 58.904C170.928 58.648 170.704 58.168 170.704 57.464C170.704 56.568 170.928 55.544 171.376 54.392C171.824 53.24 172.336 52.12 172.912 51.032C173.488 49.88 174 48.952 174.448 48.248C172.208 50.616 169.872 52.856 167.44 54.968C166.224 55.992 164.88 56.952 163.408 57.848C161.936 58.744 160.368 59.192 158.704 59.192C158.064 59.192 157.616 59 157.36 58.616C157.104 58.168 156.976 57.656 156.976 57.08C156.976 56.76 157.008 56.536 157.072 56.408C157.392 53.912 158.192 51.32 159.472 48.632C160.752 45.944 162.32 43.416 164.176 41.048C166.032 38.68 167.92 36.76 169.84 35.288C171.312 34.2 172.72 33.528 174.064 33.272C175.408 32.952 176.88 32.792 178.48 32.792H181.648C182.672 31.064 183.728 29.144 184.816 27.032C185.968 24.856 187.088 22.712 188.176 20.6C189.328 18.488 190.384 16.632 191.344 15.032C193.968 10.552 196.848 6.968 199.984 4.27999C203.184 1.592 206.736 0.247995 210.64 0.247995C211.472 0.247995 212.24 0.503996 212.944 1.016C213.648 1.464 213.968 2.168 213.904 3.128L213.712 6.584C213.712 6.648 213.648 6.744 213.52 6.872C213.392 6.936 213.296 6.96799 213.232 6.96799C213.168 6.96799 213.072 6.904 212.944 6.776C212.752 5.624 212.176 4.76 211.216 4.184C210.256 3.544 209.072 3.224 207.664 3.224C207.216 3.224 206.704 3.256 206.128 3.32C205.616 3.384 205.104 3.512 204.592 3.704C202.8 4.344 201.104 5.656 199.504 7.64C197.904 9.56 196.176 12.12 194.32 15.32C193.68 16.536 192.848 18.136 191.824 20.12C190.8 22.04 189.712 24.12 188.56 26.36C187.472 28.6 186.416 30.776 185.392 32.888C184.432 35 183.6 36.792 182.896 38.264C182.576 39.032 182.032 40.216 181.264 41.816C180.496 43.352 179.664 45.048 178.768 46.904C177.936 48.696 177.2 50.36 176.56 51.896C175.984 53.432 175.696 54.52 175.696 55.16C175.696 56.056 176.08 56.504 176.848 56.504C177.616 56.504 178.64 56.056 179.92 55.16C181.2 54.2 182.512 53.048 183.856 51.704C185.264 50.296 186.512 48.952 187.6 47.672C188.752 46.392 189.552 45.432 190 44.792C190.192 44.984 190.288 45.208 190.288 45.464C190.288 45.912 190.096 46.36 189.712 46.808C189.392 47.256 189.104 47.64 188.848 47.96C187.696 49.496 186.256 51.16 184.528 52.952C182.864 54.68 181.04 56.184 179.056 57.464C177.072 58.68 175.056 59.288 173.008 59.288ZM162.64 55.928C163.408 55.928 164.464 55.384 165.808 54.296C167.216 53.144 168.72 51.736 170.32 50.072C171.92 48.344 173.424 46.552 174.832 44.696C176.24 42.776 177.392 41.048 178.288 39.512C179.248 37.912 179.728 36.696 179.728 35.864C179.728 35.16 179.504 34.68 179.056 34.424C178.672 34.168 178.16 34.04 177.52 34.04C176.496 34.04 175.376 34.424 174.16 35.192C173.008 35.896 172.08 36.6 171.376 37.304C170.608 38.008 169.68 39.128 168.592 40.664C167.568 42.136 166.544 43.768 165.52 45.56C164.496 47.352 163.632 49.08 162.928 50.744C162.224 52.408 161.872 53.752 161.872 54.776C161.872 55.544 162.128 55.928 162.64 55.928Z"
     val helloCursiveVectorSource = VectorSource.fromPathString(helloCursivePathString)
+    val worldCursiveVectorSource = VectorSource.fromPathString(worldCursivePathString)
     val androidVectorSource =
         VectorSource.fromImageVector(ImageVector.vectorResource(R.drawable.android))
     val appleVectorSource =
@@ -70,22 +56,45 @@ fun TestScreen2() {
         VectorSource.fromImageVector(ImageVector.vectorResource(R.drawable.diamond))
     val flowerVectorSource =
         VectorSource.fromImageVector(ImageVector.vectorResource(R.drawable.flower))
+    val refreshVectorSource = VectorSource.fromImageVector(Icons.Outlined.Refresh)
+    val faceVectorSource = VectorSource.fromImageVector(Icons.Outlined.Face)
+    val favoriteVectorSource = VectorSource.fromImageVector(Icons.Outlined.FavoriteBorder)
+    val shoppingCartVectorSource = VectorSource.fromImageVector(Icons.Outlined.ShoppingCart)
+    val createVectorSource = VectorSource.fromImageVector(Icons.Outlined.Create)
+
+    val targetVectors: List<VectorSource> = listOf(
+        helloCursiveVectorSource,
+        worldCursiveVectorSource,
+        androidVectorSource,
+        appleVectorSource,
+        diamondVectorSource,
+        flowerVectorSource,
+        refreshVectorSource,
+        faceVectorSource,
+        favoriteVectorSource,
+        shoppingCartVectorSource,
+        createVectorSource
+    )
 
     val animationProgress = remember {
         Animatable(0f)
     }
 
-    LaunchedEffect(Unit) {
-        animationProgress.animateTo(
-            1f,
-            animationSpec = infiniteRepeatable(
-                tween(
-                    durationMillis = 1000,
-                    easing = EaseInOutExpo
-                ), RepeatMode.Reverse
-            )
-        )
-    }
+//    LaunchedEffect(Unit) {
+//        animationProgress.animateTo(
+//            1f,
+//            animationSpec = infiniteRepeatable(
+//                tween(
+//                    durationMillis = 1000,
+//                    easing = EaseInOutExpo
+//                ), RepeatMode.Reverse
+//            )
+//        )
+//    }
+
+    var currStartSource by remember { mutableStateOf(appleVectorSource) }
+    var currEndSource by remember { mutableStateOf(flowerVectorSource) }
+    val coroutineScope = rememberCoroutineScope()
 
     Column(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -93,31 +102,53 @@ fun TestScreen2() {
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AnimatedVector(
+            AnimatedMorphVector(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .padding(12.dp),
-                startSource = VectorSource.fromImageVector(Icons.Rounded.FavoriteBorder),
-                endSource = flowerVectorSource,
+                    .padding(36.dp),
+                startSource = currStartSource,
+                endSource = currEndSource,
                 progress = animationProgress.value,
-                strokeWidth = 50f,
-                strokeColor = Color.Black
+                strokeWidth = 25f,
+                strokeColor = Color.Black,
             )
+        }
+        FadingLazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 100.dp),
+            contentPadding = PaddingValues(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(targetVectors) {
+                VectorItem(modifier = Modifier.clickable {
+                    coroutineScope.launch {
+                        while (isActive && animationProgress.isRunning) {
+                            delay(50)
+                        }
+                        if (animationProgress.value == 1f) {
+                            currStartSource = it
+                            animationProgress.animateTo(
+                                0f,
+                                animationSpec = tween(
+                                    durationMillis = 1000,
+                                    easing = EaseInOutExpo
+                                )
+                            )
+                        } else {
+                            currEndSource = it
+                            animationProgress.animateTo(
+                                1f,
+                                animationSpec = tween(
+                                    durationMillis = 1000,
+                                    easing = EaseInOutExpo
+                                )
+                            )
+
+                        }
+                    }
+                }, vectorSource = it)
+            }
         }
     }
 }
-
-
-fun generateRandomColors(count: Int): List<Color> {
-    return List(count) {
-        // Generate random RGB values
-        val red = Random.nextInt(256)
-        val green = Random.nextInt(256)
-        val blue = Random.nextInt(256)
-
-        // Combine them to create a color integer
-        Color(red, green, blue)
-    }
-}
-

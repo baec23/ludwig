@@ -7,17 +7,11 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.vector.PathNode
 import androidx.compose.ui.graphics.vector.PathParser
-import com.baec23.ludwig.morpher.model.PathSegment
-import com.baec23.ludwig.morpher.model.interpolate
-import java.lang.Math.pow
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.ceil
-import kotlin.math.cos
-import kotlin.math.pow
-import kotlin.math.sin
-import kotlin.math.sqrt
-import kotlin.math.tan
+import com.baec23.ludwig.morpher.model.path.PathSegment
+
+fun List<PathNode>.toPath(): Path {
+    return PathParser().addPathNodes(this).toPath()
+}
 
 /**
  * Splits a path (defined by List<PathNode>) into visual subpaths.
@@ -26,7 +20,7 @@ import kotlin.math.tan
  * Sequential MoveTo/RelativeMoveTo are collapsed into a single MoveTo.
  * Close is replaced with LineTo for interop with unclosed paths.
  */
-fun List<PathNode>.splitPaths(): List<List<PathNode>> {
+internal fun List<PathNode>.splitPaths(): List<List<PathNode>> {
     val toReturn = mutableListOf<List<PathNode>>()
     val currSubpath = mutableListOf<PathNode>()
     val currPosition = PointF(0f, 0f)
@@ -160,201 +154,7 @@ fun List<PathNode>.splitPaths(): List<List<PathNode>> {
         .toList()
 }
 
-
-fun PathNode.lerp(target: PathNode, fraction: Float): PathNode {
-    if (this::class != target::class) {
-        throw Exception()
-    }
-    return when (this) {
-        is PathNode.ArcTo -> {
-            target as PathNode.ArcTo
-            val newArcStartX = lerp(this.arcStartX, target.arcStartX, fraction)
-            val newArcStartY = lerp(this.arcStartY, target.arcStartY, fraction)
-            val newHorizontalEllipseRadius =
-                lerp(this.horizontalEllipseRadius, target.horizontalEllipseRadius, fraction)
-            val newVerticalEllipseRadius =
-                lerp(this.verticalEllipseRadius, target.verticalEllipseRadius, fraction)
-            val newTheta = lerp(this.theta, target.theta, fraction)
-            this.copy(
-                arcStartX = newArcStartX,
-                arcStartY = newArcStartY,
-                horizontalEllipseRadius = newHorizontalEllipseRadius,
-                verticalEllipseRadius = newVerticalEllipseRadius,
-                theta = newTheta
-            )
-        }
-
-        is PathNode.CurveTo -> {
-            target as PathNode.CurveTo
-            val newX1 = lerp(this.x1, target.x1, fraction)
-            val newY1 = lerp(this.y1, target.y1, fraction)
-            val newX2 = lerp(this.x2, target.x2, fraction)
-            val newY2 = lerp(this.y2, target.y2, fraction)
-            val newX3 = lerp(this.x3, target.x3, fraction)
-            val newY3 = lerp(this.y3, target.y3, fraction)
-            PathNode.CurveTo(
-                x1 = newX1,
-                y1 = newY1,
-                x2 = newX2,
-                y2 = newY2,
-                x3 = newX3,
-                y3 = newY3
-            )
-        }
-
-        is PathNode.HorizontalTo -> {
-            target as PathNode.HorizontalTo
-            val newX = lerp(this.x, target.x, fraction)
-            PathNode.HorizontalTo(x = newX)
-        }
-
-        is PathNode.LineTo -> {
-            target as PathNode.LineTo
-            val newX = lerp(this.x, target.x, fraction)
-            val newY = lerp(this.y, target.y, fraction)
-            PathNode.LineTo(x = newX, y = newY)
-        }
-
-        is PathNode.MoveTo -> {
-            target as PathNode.MoveTo
-            val newX = lerp(this.x, target.x, fraction)
-            val newY = lerp(this.y, target.y, fraction)
-            PathNode.MoveTo(x = newX, y = newY)
-        }
-
-        is PathNode.QuadTo -> {
-            target as PathNode.QuadTo
-            val newX1 = lerp(this.x1, target.x1, fraction)
-            val newY1 = lerp(this.y1, target.y1, fraction)
-            val newX2 = lerp(this.x2, target.x2, fraction)
-            val newY2 = lerp(this.y2, target.y2, fraction)
-            PathNode.QuadTo(x1 = newX1, y1 = newY1, x2 = newX2, y2 = newY2)
-        }
-
-        is PathNode.ReflectiveCurveTo -> {
-            target as PathNode.ReflectiveCurveTo
-            val newX1 = lerp(this.x1, target.x1, fraction)
-            val newY1 = lerp(this.y1, target.y1, fraction)
-            val newX2 = lerp(this.x2, target.x2, fraction)
-            val newY2 = lerp(this.y2, target.y2, fraction)
-            PathNode.ReflectiveCurveTo(x1 = newX1, y1 = newY1, x2 = newX2, y2 = newY2)
-        }
-
-        is PathNode.ReflectiveQuadTo -> {
-            target as PathNode.ReflectiveQuadTo
-            val newX = lerp(this.x, target.x, fraction)
-            val newY = lerp(this.y, target.y, fraction)
-            PathNode.ReflectiveQuadTo(x = newX, y = newY)
-        }
-
-        is PathNode.VerticalTo -> {
-            target as PathNode.VerticalTo
-            val newY = lerp(this.y, target.y, fraction)
-            PathNode.VerticalTo(y = newY)
-        }
-
-        else -> this
-    }
-}
-
-
-fun PathNode.lerp(target: Offset, fraction: Float): PathNode {
-    if (this == PathNode.Close) {
-        return this
-    }
-    return when (this) {
-        is PathNode.ArcTo -> {
-            val newArcStartX = lerp(this.arcStartX, target.x, fraction)
-            val newArcStartY = lerp(this.arcStartY, target.y, fraction)
-            val newHorizontalEllipseRadius =
-                lerp(this.horizontalEllipseRadius, target.x, fraction)
-            val newVerticalEllipseRadius =
-                lerp(this.verticalEllipseRadius, target.y, fraction)
-            this.copy(
-                arcStartX = newArcStartX,
-                arcStartY = newArcStartY,
-                horizontalEllipseRadius = newHorizontalEllipseRadius,
-                verticalEllipseRadius = newVerticalEllipseRadius,
-            )
-        }
-
-        is PathNode.CurveTo -> {
-            val newX1 = lerp(this.x1, target.x, fraction)
-            val newY1 = lerp(this.y1, target.y, fraction)
-            val newX2 = lerp(this.x2, target.x, fraction)
-            val newY2 = lerp(this.y2, target.y, fraction)
-            val newX3 = lerp(this.x3, target.x, fraction)
-            val newY3 = lerp(this.y3, target.y, fraction)
-            PathNode.CurveTo(
-                x1 = newX1,
-                y1 = newY1,
-                x2 = newX2,
-                y2 = newY2,
-                x3 = newX3,
-                y3 = newY3
-            )
-        }
-
-        is PathNode.HorizontalTo -> {
-            val newX = lerp(this.x, target.x, fraction)
-            PathNode.HorizontalTo(x = newX)
-        }
-
-        is PathNode.LineTo -> {
-            val newX = lerp(this.x, target.x, fraction)
-            val newY = lerp(this.y, target.y, fraction)
-            PathNode.LineTo(x = newX, y = newY)
-        }
-
-        is PathNode.MoveTo -> {
-            val newX = lerp(this.x, target.x, fraction)
-            val newY = lerp(this.y, target.y, fraction)
-            PathNode.MoveTo(x = newX, y = newY)
-        }
-
-        is PathNode.QuadTo -> {
-            val newX1 = lerp(this.x1, target.x, fraction)
-            val newY1 = lerp(this.y1, target.y, fraction)
-            val newX2 = lerp(this.x2, target.x, fraction)
-            val newY2 = lerp(this.y2, target.y, fraction)
-            PathNode.QuadTo(x1 = newX1, y1 = newY1, x2 = newX2, y2 = newY2)
-        }
-
-        is PathNode.ReflectiveCurveTo -> {
-            val newX1 = lerp(this.x1, target.x, fraction)
-            val newY1 = lerp(this.y1, target.y, fraction)
-            val newX2 = lerp(this.x2, target.x, fraction)
-            val newY2 = lerp(this.y2, target.y, fraction)
-            PathNode.ReflectiveCurveTo(x1 = newX1, y1 = newY1, x2 = newX2, y2 = newY2)
-        }
-
-        is PathNode.ReflectiveQuadTo -> {
-            val newX = lerp(this.x, target.x, fraction)
-            val newY = lerp(this.y, target.y, fraction)
-            PathNode.ReflectiveQuadTo(x = newX, y = newY)
-        }
-
-        is PathNode.VerticalTo -> {
-            val newY = lerp(this.y, target.y, fraction)
-            PathNode.VerticalTo(y = newY)
-        }
-
-        else -> {
-            this
-        }
-    }
-}
-
-fun PathNode.calcLength(startOffset: Offset): Float {
-    val path =
-        PathParser().addPathNodes(listOf(PathNode.MoveTo(startOffset.x, startOffset.y), this))
-            .toPath()
-    val pathMeasurer = PathMeasure()
-    pathMeasurer.setPath(path, false)
-    return pathMeasurer.length
-}
-
-fun List<PathNode>.normalize(
+internal fun List<PathNode>.normalize(
     offset: Offset,
     scaleFactorX: Float,
     scaleFactorY: Float
@@ -484,7 +284,7 @@ fun List<PathNode>.normalize(
     }
 }
 
-fun List<PathNode>.toPathSegments(): List<PathSegment> {
+internal fun List<PathNode>.toPathSegments(): List<PathSegment> {
     val toReturn = mutableListOf<PathSegment>()
     var currPosition = Offset(0f, 0f)
 
@@ -494,8 +294,8 @@ fun List<PathNode>.toPathSegments(): List<PathSegment> {
         when (node) {
             //Lines
             is PathNode.LineTo -> {
-                val cp1 = interpolate(currPosition, Offset(node.x, node.y), 0.33f)
-                val cp2 = interpolate(currPosition, Offset(node.x, node.y), 0.66f)
+                val cp1 = lerp(currPosition, Offset(node.x, node.y), 0.33f)
+                val cp2 = lerp(currPosition, Offset(node.x, node.y), 0.66f)
                 val x1 = cp1.x
                 val y1 = cp1.y
                 val x2 = cp2.x
@@ -509,8 +309,8 @@ fun List<PathNode>.toPathSegments(): List<PathSegment> {
             is PathNode.RelativeLineTo -> {
                 val x = currPosition.x + node.dx
                 val y = currPosition.y + node.dy
-                val cp1 = interpolate(currPosition, Offset(x, y), 0.33f)
-                val cp2 = interpolate(currPosition, Offset(x, y), 0.66f)
+                val cp1 = lerp(currPosition, Offset(x, y), 0.33f)
+                val cp2 = lerp(currPosition, Offset(x, y), 0.66f)
                 val x1 = cp1.x
                 val y1 = cp1.y
                 val x2 = cp2.x
@@ -524,8 +324,8 @@ fun List<PathNode>.toPathSegments(): List<PathSegment> {
             is PathNode.HorizontalTo -> {
                 val x = node.x
                 val y = currPosition.y
-                val cp1 = interpolate(currPosition, Offset(x, y), 0.33f)
-                val cp2 = interpolate(currPosition, Offset(x, y), 0.66f)
+                val cp1 = lerp(currPosition, Offset(x, y), 0.33f)
+                val cp2 = lerp(currPosition, Offset(x, y), 0.66f)
                 val x1 = cp1.x
                 val y1 = cp1.y
                 val x2 = cp2.x
@@ -539,8 +339,8 @@ fun List<PathNode>.toPathSegments(): List<PathSegment> {
             is PathNode.RelativeHorizontalTo -> {
                 val x = currPosition.x + node.dx
                 val y = currPosition.y
-                val cp1 = interpolate(currPosition, Offset(x, y), 0.33f)
-                val cp2 = interpolate(currPosition, Offset(x, y), 0.66f)
+                val cp1 = lerp(currPosition, Offset(x, y), 0.33f)
+                val cp2 = lerp(currPosition, Offset(x, y), 0.66f)
                 val x1 = cp1.x
                 val y1 = cp1.y
                 val x2 = cp2.x
@@ -554,8 +354,8 @@ fun List<PathNode>.toPathSegments(): List<PathSegment> {
             is PathNode.VerticalTo -> {
                 val x = currPosition.x
                 val y = node.y
-                val cp1 = interpolate(currPosition, Offset(x, y), 0.33f)
-                val cp2 = interpolate(currPosition, Offset(x, y), 0.66f)
+                val cp1 = lerp(currPosition, Offset(x, y), 0.33f)
+                val cp2 = lerp(currPosition, Offset(x, y), 0.66f)
                 val x1 = cp1.x
                 val y1 = cp1.y
                 val x2 = cp2.x
@@ -569,8 +369,8 @@ fun List<PathNode>.toPathSegments(): List<PathSegment> {
             is PathNode.RelativeVerticalTo -> {
                 val x = currPosition.x
                 val y = currPosition.y + node.dy
-                val cp1 = interpolate(currPosition, Offset(x, y), 0.33f)
-                val cp2 = interpolate(currPosition, Offset(x, y), 0.66f)
+                val cp1 = lerp(currPosition, Offset(x, y), 0.33f)
+                val cp2 = lerp(currPosition, Offset(x, y), 0.66f)
                 val x1 = cp1.x
                 val y1 = cp1.y
                 val x2 = cp2.x
@@ -744,12 +544,14 @@ fun List<PathNode>.toPathSegments(): List<PathSegment> {
                     theta = node.theta,
                     end = Offset(node.arcStartX, node.arcStartY)
                 )
-                arcCurves.forEach{
-                    toReturn.add(PathSegment(
-                        startPosition = currPosition,
-                        endPosition = Offset(it.x3, it.y3),
-                        pathNode = it
-                    ))
+                arcCurves.forEach {
+                    toReturn.add(
+                        PathSegment(
+                            startPosition = currPosition,
+                            endPosition = Offset(it.x3, it.y3),
+                            pathNode = it
+                        )
+                    )
                     currPosition = Offset(it.x3, it.y3)
                 }
                 nodeToAdd = PathNode.Close // already added to toReturn manually
@@ -768,12 +570,14 @@ fun List<PathNode>.toPathSegments(): List<PathSegment> {
                     theta = node.theta,
                     end = Offset(endX, endY)
                 )
-                arcCurves.forEach{
-                    toReturn.add(PathSegment(
-                        startPosition = currPosition,
-                        endPosition = Offset(it.x3, it.y3),
-                        pathNode = it
-                    ))
+                arcCurves.forEach {
+                    toReturn.add(
+                        PathSegment(
+                            startPosition = currPosition,
+                            endPosition = Offset(it.x3, it.y3),
+                            pathNode = it
+                        )
+                    )
                     currPosition = Offset(it.x3, it.y3)
                 }
                 nodeToAdd = PathNode.Close // already added to toReturn manually
@@ -810,7 +614,7 @@ fun List<PathNode>.toPathSegments(): List<PathSegment> {
     return toReturn.toList()
 }
 
-fun List<PathNode>.calcLength(): Float {
+internal fun List<PathNode>.calcLength(): Float {
     val path = PathParser().addPathNodes(this).toPath()
     val pathMeasurer = PathMeasure()
     pathMeasurer.setPath(path, false)
@@ -818,21 +622,45 @@ fun List<PathNode>.calcLength(): Float {
 }
 
 
-fun List<PathNode>.trim(): List<PathNode> {
-    val firstIndex = this.indexOfFirst { it !is PathNode.MoveTo && it !is PathNode.RelativeMoveTo }
-    var lastIndex = this.indexOfLast { it == PathNode.Close }
-    if (lastIndex == -1) {
-        lastIndex = this.size
+internal fun List<PathSegment>.reversedWindingDirection(): List<PathSegment> {
+    val toReturn = mutableListOf<PathSegment>()
+
+    this.forEach { segment ->
+        val node = segment.pathNode
+        if (node !is PathNode.MoveTo) {
+            node as PathNode.CurveTo
+            val newNode = PathNode.CurveTo(
+                node.x2,
+                node.y2,
+                node.x1,
+                node.y1,
+                segment.startPosition.x,
+                segment.startPosition.y
+            )
+            toReturn.add(
+                0,
+                PathSegment(
+                    startPosition = Offset(node.x3, node.y3),
+                    endPosition = Offset(segment.startPosition.x, segment.startPosition.y),
+                    pathNode = newNode
+                )
+            )
+        }
     }
-    return this.subList(firstIndex, lastIndex)
+    val startOffset = Offset(this.last().endPosition.x, this.last().endPosition.y)
+    toReturn.add(
+        0,
+        PathSegment(
+            startPosition = startOffset,
+            endPosition = startOffset,
+            pathNode = PathNode.MoveTo(startOffset.x, startOffset.y)
+        )
+    )
+    return toReturn.toList()
 }
 
-fun List<PathNode>.toPath(): Path {
-    return PathParser().addPathNodes(this).toPath()
-}
 
-
-fun List<PathNode>.toCustomString(): String {
+internal fun List<PathNode>.toCustomString(): String {
     val sb = StringBuilder()
     this.forEach { pathNode ->
         sb.append(pathNode.toCustomString())
@@ -840,7 +668,7 @@ fun List<PathNode>.toCustomString(): String {
     return sb.toString()
 }
 
-fun PathNode.toCustomString(): String {
+internal fun PathNode.toCustomString(): String {
     return when (this) {
         is PathNode.ArcTo -> """
             ===ArcTo===
@@ -948,21 +776,4 @@ fun PathNode.toCustomString(): String {
             y = $y
             """
     }
-}
-
-fun <T> List<T>.rotateToIndex(index: Int): List<T> {
-    // Check if the index is within the bounds of the list
-    if (index < 0 || index >= size) {
-        throw IllegalArgumentException("Index out of bounds")
-    }
-
-    // If the index is 0, no rotation is needed
-    if (index == 0) return this
-
-    // Rotate the list
-    return this.subList(index, this.size) + this.subList(0, index)
-}
-
-fun lerp(start: Float, end: Float, fraction: Float): Float {
-    return start + (end - start) * fraction
 }

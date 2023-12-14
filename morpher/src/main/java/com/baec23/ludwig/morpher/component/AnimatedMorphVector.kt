@@ -17,39 +17,21 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
 import com.baec23.ludwig.morpher.MorphAnimator
-import com.baec23.ludwig.morpher.model.VectorSource
-import kotlinx.coroutines.async
+import com.baec23.ludwig.morpher.model.morpher.VectorSource
 
 @Composable
-fun AnimatedVector(
+fun AnimatedMorphVector(
     modifier: Modifier = Modifier,
     startSource: VectorSource,
     endSource: VectorSource,
     progress: Float,
     strokeWidth: Float = 20f,
     strokeColor: Color = Color.Black,
-    extraPathsBreakpoint: Float = 0.2f
+    extraPathsBreakpoint: Float = 0.2f,
+    animationSmoothness: Int = 200,
 ) {
     var canvasSize by remember { mutableStateOf(IntSize.Zero) }
     var morphAnimator by remember { mutableStateOf<MorphAnimator?>(null) }
-
-    LaunchedEffect(startSource, endSource, canvasSize) {
-        if (canvasSize.width == 0) {
-            return@LaunchedEffect
-        }
-        val pathData = async {
-            MorphAnimator.generatePathData(
-                startSource,
-                endSource,
-                canvasSize.width.toFloat(),
-                canvasSize.height.toFloat()
-            )
-        }.await()
-        val animationData = async {
-            MorphAnimator.generateAnimationData(pathData = pathData, smoothness = 500)
-        }.await()
-        morphAnimator = MorphAnimator(pathData, animationData)
-    }
 
     LaunchedEffect(startSource, endSource, canvasSize) {
         if (canvasSize.width == 0) {
@@ -59,7 +41,8 @@ fun AnimatedVector(
             start = startSource,
             end = endSource,
             width = canvasSize.width.toFloat(),
-            height = canvasSize.height.toFloat()
+            height = canvasSize.height.toFloat(),
+            smoothness = animationSmoothness
         )
     }
 
@@ -125,8 +108,6 @@ fun AnimatedVector(
                             alpha = minOf(maxOf(extraEndPathsAnimationProgress, 0f), 1f)
                         )
                     }
-
-
                 }
             }
         )

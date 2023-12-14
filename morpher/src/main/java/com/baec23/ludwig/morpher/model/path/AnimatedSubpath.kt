@@ -1,4 +1,4 @@
-package com.baec23.ludwig.morpher.model
+package com.baec23.ludwig.morpher.model.path
 
 import androidx.compose.ui.graphics.vector.PathNode
 

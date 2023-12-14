@@ -1,27 +1,44 @@
-package com.baec23.ludwig.morpher.model
+package com.baec23.ludwig.morpher.model.morpher
 
 import androidx.compose.ui.graphics.Path
 import com.baec23.ludwig.morpher.util.getClampedIndex
 
 data class MorpherAnimationData(
-    val pairedPaths: Array<Path>,
-    val unpairedStartPaths: Array<Path>,
-    val unpairedEndPaths: Array<Path>,
+    val pairedPaths: Array<Path?>,
+    val unpairedStartPaths: Array<Path?>,
+    val unpairedEndPaths: Array<Path?>,
+
 ) {
     private val smoothness = pairedPaths.size - 1
-    fun getInterpolatedPairedPath(fraction: Float): Path {
+
+    fun getInterpolatedPairedPath(fraction: Float): Path? {
         val index = getClampedIndex(fraction, smoothness)
         return pairedPaths[index]
     }
 
-    fun getInterpolatedUnpairedStartPath(fraction: Float): Path {
+    fun getInterpolatedUnpairedStartPath(fraction: Float): Path? {
         val index = getClampedIndex(fraction, smoothness)
         return unpairedStartPaths[index]
     }
 
-    fun getInterpolatedUnpairedEndPath(fraction: Float): Path {
+    fun getInterpolatedUnpairedEndPath(fraction: Float): Path? {
         val index = getClampedIndex(fraction, smoothness)
         return unpairedEndPaths[index]
+    }
+
+    fun setInterpolatedPairedPath(fraction: Float, path: Path) {
+        val index = getClampedIndex(fraction, smoothness)
+        pairedPaths[index] = path
+    }
+
+    fun setInterpolatedUnpairedStartPath(fraction: Float, path: Path) {
+        val index = getClampedIndex(fraction, smoothness)
+        unpairedStartPaths[index] = path
+    }
+
+    fun setInterpolatedEndPath(fraction: Float, path: Path) {
+        val index = getClampedIndex(fraction, smoothness)
+        unpairedEndPaths[index] = path
     }
 
     override fun equals(other: Any?): Boolean {

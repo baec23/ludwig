@@ -3,7 +3,7 @@ package com.baec23.ludwig.morpher.util
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.PathNode
 
-fun approximateArcToCurves(
+internal fun approximateArcToCurves(
     start: Offset,
     verticalEllipseRadius: Float,
     horizontalEllipseRadius: Float,

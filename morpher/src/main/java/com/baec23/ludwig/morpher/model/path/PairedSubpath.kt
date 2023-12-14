@@ -1,8 +1,10 @@
-package com.baec23.ludwig.morpher.model
+package com.baec23.ludwig.morpher.model.path
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.PathNode
+import com.baec23.ludwig.morpher.util.distanceTo
 import com.baec23.ludwig.morpher.util.lerp
+import com.baec23.ludwig.morpher.util.reversedWindingDirection
 import com.baec23.ludwig.morpher.util.rotateToIndex
 import com.baec23.ludwig.morpher.util.toPathSegments
 import kotlin.math.abs
@@ -11,9 +13,9 @@ class PairedSubpath(
     startPathNodes: List<PathNode>,
     endPathNodes: List<PathNode>,
 ) : AnimatedSubpath {
-    private var startPathSegments: MutableList<PathSegment> =
+    var startPathSegments: MutableList<PathSegment> =
         startPathNodes.toPathSegments().toMutableList()
-    private var endPathSegments: MutableList<PathSegment> =
+    var endPathSegments: MutableList<PathSegment> =
         endPathNodes.toPathSegments().toMutableList()
 
     private val startIsClosed: Boolean = startPathNodes.find { it == PathNode.Close } != null
@@ -21,6 +23,12 @@ class PairedSubpath(
 
     init {
         if (startIsClosed && endIsClosed) {
+
+            val shouldReverse = startPathSegments.isClockwise().xor(endPathSegments.isClockwise())
+            if (shouldReverse) {
+                endPathSegments = endPathSegments.reversedWindingDirection().toMutableList()
+            }
+
             val filtered =
                 endPathSegments.filterNot { it.pathNode is PathNode.MoveTo || it.pathNode is PathNode.RelativeMoveTo }
             val closestEndIndex =
@@ -103,4 +111,15 @@ class PairedSubpath(
         }
         return closestEndIndex
     }
+}
+
+fun List<PathSegment>.isClockwise(): Boolean {
+    var area = 0f
+    val filtered = this.filter { it.pathNode is PathNode.CurveTo }
+    filtered.forEach {
+        val trapezoidArea =
+            (it.endPosition.x - it.startPosition.x) * (it.startPosition.y + it.endPosition.y) / 2
+        area += trapezoidArea
+    }
+    return area >= 0
 }
