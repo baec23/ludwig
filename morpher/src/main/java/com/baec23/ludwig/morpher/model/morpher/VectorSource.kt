@@ -8,6 +8,9 @@ import androidx.compose.ui.graphics.vector.PathNode
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.graphics.vector.VectorPath
 import com.baec23.ludwig.morpher.util.normalize
+import org.xml.sax.InputSource
+import java.io.ByteArrayInputStream
+import javax.xml.parsers.DocumentBuilderFactory
 
 
 data class VectorSource(
@@ -41,6 +44,34 @@ data class VectorSource(
                 Size(viewportWidth, viewportHeight),
                 Offset(viewportOffsetX, viewportOffsetY)
             )
+        }
+
+        fun fromSvgString(
+            svgString: String
+        ): VectorSource {
+            val factory = DocumentBuilderFactory.newInstance()
+            val builder = factory.newDocumentBuilder()
+            val inputStream = ByteArrayInputStream(svgString.toByteArray(Charsets.UTF_8))
+            val document = builder.parse(InputSource(inputStream))
+
+            val svgElement = document.getElementsByTagName("svg").item(0)
+            val viewBoxValues = svgElement.attributes.getNamedItem("viewBox").nodeValue.split(" ")
+                .map { it.toFloat() }
+
+            val pathStringBuilder = StringBuilder()
+            val pathElements = document.getElementsByTagName("path")
+
+            for (i in 0 until pathElements.length) {
+                val pathElement = pathElements.item(i)
+                val pathD = pathElement.attributes.getNamedItem("d")
+                pathStringBuilder.append(pathD.nodeValue)
+            }
+            return fromPathString(
+                pathString = pathStringBuilder.toString(),
+                viewportSize = Size(viewBoxValues[2], viewBoxValues[3]),
+                viewportOffset = Offset(viewBoxValues[0], viewBoxValues[1])
+            )
+
         }
 
         fun fromImageVector(imageVector: ImageVector): VectorSource {
