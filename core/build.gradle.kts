@@ -61,7 +61,7 @@ afterEvaluate{
     publishing {
         publications {
             create<MavenPublication>("maven") {
-                groupId = "com.baec23.ludwig"
+                groupId = "com.github.baec23.ludwig"
                 artifactId = "core"
                 from(components["release"])
             }
