@@ -1,11 +1,8 @@
 # Ludwig for Jetpack Compose
 ### Installation
-#### Add JitPack.io repository (settings.gradle.kts)
+#### Add JitPack repository (settings.gradle.kts)
 ```
 repositories {
-    gradlePluginPortal()
-    google()
-    mavenCentral()
     maven {
         url = uri("https://jitpack.io")
     }
