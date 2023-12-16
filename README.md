@@ -1,6 +1,6 @@
-# Ludwig - A Jetpack Compose UI Library
-## Installation
-### Add JitPack.io repository (settings.gradle.kts)
+# Ludwig for Jetpack Compose
+### Installation
+#### Add JitPack.io repository (settings.gradle.kts)
 ```
 repositories {
     gradlePluginPortal()
@@ -11,13 +11,88 @@ repositories {
     }
 }
 ```
-### Add Gradle dependency (build.gradle.kts (app))
+
+# Morpher
+#### Add Gradle dependency (build.gradle.kts (app))
 ```
 dependencies {
-    implementation "com.github.baec23:ludwig:1.0.1"
+    implementation "com.github.baec23.ludwig:morpher:1.0.3"
 }
 ```
+[Demo](https://github.com/baec23/ludwig/assets/65561206/a9e49756-aa94-4657-b39c-e48ffb726202)
 
+### Getting Started
+#### Create VectorSource from ImageVector or path String
+```kotlin
+VectorSource.fromImageVector(Icons.Outlined.Star)
+VectorSource.fromImageVector(ImageVector.vectorResource(R.drawable.androidlogo))
+VectorSource.fromPathString("m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z")
+```
+#### Use AnimatedVector component
+When vectorSource changes, AnimatedVector will morph animate the change.
+```kotlin
+AnimatedVector(
+    vectorSource = selectedVectorSource
+)
+```
+#### Full sample
+```kotlin
+@Composable
+fun MorpherSample() {
+
+    //VectorSource can be created from ImageVector
+    //    Icons
+    //    Imported drawable resources - VectorSource.fromImageVector(ImageVector.vectorResource(R.drawable.imported_vector))
+    val vectorSource1 = VectorSource.fromImageVector(Icons.Outlined.Star)
+    //VectorSource can also be created from a path string (the 'd' attribute of a <path> element)
+    val vectorSource2 =
+        VectorSource.fromPathString("m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z")
+
+    var selectedVectorSource by remember { mutableStateOf(vectorSource1) }
+
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        //AnimatedVector will automatically animate morph when 'vectorSource' changes
+        //    AnimatedVector can be customized with optional params
+        //    animationSpec: AnimationSpec<Float>
+        //    strokeWidth: Float
+        //    strokeColor: Color
+        AnimatedVector(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .padding(36.dp),
+            vectorSource = selectedVectorSource,
+        )
+
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Button(
+                modifier = Modifier.weight(1f),
+                onClick = { selectedVectorSource = vectorSource1 }) {
+                Text(text = "Source 1")
+            }
+            Button(
+                modifier = Modifier.weight(1f),
+                onClick = { selectedVectorSource = vectorSource2 }) {
+                Text(text = "Source 2")
+            }
+        }
+    }
+}
+```
+### Issues
+- Only Stroke is supported for now
+- Arcs are not supported for now
+- Performance is likely pretty terrible
+
+# UI Components
+#### Add Gradle dependency (build.gradle.kts (app))
+```
+dependencies {
+    implementation "com.github.baec23.ludwig:component:1.0.3"
+}
+```
 ## Component Showcase
 ### DisplaySection / ExpandableDisplaySection / PreferenceSection
 Static and expandable display sections to organize content - examples shown in demos for other components
