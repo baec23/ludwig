@@ -24,7 +24,7 @@ data class VectorSource(
     companion object {
         /**
          * The 'd' attribute within a <path> element
-         * If viewportWidth <= 0 or viewportHeight <=0, will just use path bounds
+         * If viewportSize and/or viewportOffset are null, will use bounds
          */
         fun fromPathString(
             pathString: String,

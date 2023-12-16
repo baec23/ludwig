@@ -9,10 +9,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.baec23.ludwig.core.fadingLazy.FadingLazyColumn
-import com.baec23.ludwig.core.fadingLazy.FadingLazyHorizontalGrid
-import com.baec23.ludwig.core.fadingLazy.FadingLazyRow
-import com.baec23.ludwig.core.fadingLazy.FadingLazyVerticalGrid
+import com.baec23.ludwig.component.fadinglazy.FadingLazyColumn
+import com.baec23.ludwig.component.fadinglazy.FadingLazyHorizontalGrid
+import com.baec23.ludwig.component.fadinglazy.FadingLazyRow
+import com.baec23.ludwig.component.fadinglazy.FadingLazyVerticalGrid
 
 @Composable
 fun ToggleableIconRow(

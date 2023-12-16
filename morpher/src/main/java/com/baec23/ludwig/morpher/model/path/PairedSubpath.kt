@@ -15,8 +15,7 @@ class PairedSubpath(
 ) : AnimatedSubpath {
     var startPathSegments: MutableList<PathSegment> =
         startPathNodes.toPathSegments().toMutableList()
-    var endPathSegments: MutableList<PathSegment> =
-        endPathNodes.toPathSegments().toMutableList()
+    var endPathSegments: MutableList<PathSegment> = endPathNodes.toPathSegments().toMutableList()
 
     private val startIsClosed: Boolean = startPathNodes.find { it == PathNode.Close } != null
     private val endIsClosed: Boolean = endPathNodes.find { it == PathNode.Close } != null
@@ -40,8 +39,7 @@ class PairedSubpath(
                     startPosition = closestEndSegment.startPosition,
                     endPosition = closestEndSegment.startPosition,
                     pathNode = PathNode.MoveTo(
-                        closestEndSegment.startPosition.x,
-                        closestEndSegment.startPosition.y
+                        closestEndSegment.startPosition.x, closestEndSegment.startPosition.y
                     )
                 )
             )
@@ -113,7 +111,11 @@ class PairedSubpath(
     }
 }
 
-fun List<PathSegment>.isClockwise(): Boolean {
+private fun List<PathSegment>.isClockwise(): Boolean {
+    return this.getArea() >= 0
+}
+
+private fun List<PathSegment>.getArea(): Float {
     var area = 0f
     val filtered = this.filter { it.pathNode is PathNode.CurveTo }
     filtered.forEach {
@@ -121,5 +123,5 @@ fun List<PathSegment>.isClockwise(): Boolean {
             (it.endPosition.x - it.startPosition.x) * (it.startPosition.y + it.endPosition.y) / 2
         area += trapezoidArea
     }
-    return area >= 0
+    return area
 }

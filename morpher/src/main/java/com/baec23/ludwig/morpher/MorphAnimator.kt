@@ -184,7 +184,7 @@ class MorphAnimator() {
     fun getInterpolatedPairedPath(fraction: Float): Path {
         var cachedPath = animationData.getInterpolatedPairedPath(fraction)
         if (cachedPath == null) {
-            Log.d("DEBUG", "Paired path cache miss - ${fraction}")
+//            Log.d("DEBUG", "Paired path cache miss - ${fraction}")
             val pathNodes = pathData.pairedSubpaths.map { it.getInterpolatedPathNodes(fraction) }
             val pathParser = PathParser()
             pathParser.addPathNodes(pathNodes.flatten())
@@ -197,7 +197,7 @@ class MorphAnimator() {
     fun getInterpolatedUnpairedStartPath(fraction: Float): Path {
         var cachedPath = animationData.getInterpolatedUnpairedStartPath(fraction)
         if (cachedPath == null) {
-            Log.d("DEBUG", "Unpaired start path cache miss - ${fraction}")
+//            Log.d("DEBUG", "Unpaired start path cache miss - ${fraction}")
             val pathNodes =
                 pathData.unpairedStartSubpaths.map { it.getInterpolatedPathNodes(fraction) }
             val pathParser = PathParser()
@@ -211,7 +211,7 @@ class MorphAnimator() {
     fun getInterpolatedUnpairedEndPath(fraction: Float): Path {
         var cachedPath = animationData.getInterpolatedUnpairedEndPath(fraction)
         if (cachedPath == null) {
-            Log.d("DEBUG", "Unpaired end path cache miss - ${fraction}")
+//            Log.d("DEBUG", "Unpaired end path cache miss - ${fraction}")
             val pathNodes =
                 pathData.unpairedEndSubpaths.map { it.getInterpolatedPathNodes(fraction) }
             val pathParser = PathParser()

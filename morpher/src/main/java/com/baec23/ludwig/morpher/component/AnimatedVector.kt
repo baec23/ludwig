@@ -1,5 +1,9 @@
 package com.baec23.ludwig.morpher.component
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.EaseInOutExpo
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,9 +22,58 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
 import com.baec23.ludwig.morpher.MorphAnimator
 import com.baec23.ludwig.morpher.model.morpher.VectorSource
+import kotlinx.coroutines.delay
 
 @Composable
-fun AnimatedMorphVector(
+fun AnimatedVector(
+    modifier: Modifier = Modifier,
+    vectorSource: VectorSource,
+    animationSpec: AnimationSpec<Float> = tween(durationMillis = 1000, easing = EaseInOutExpo),
+    strokeWidth: Float = 10f,
+    strokeColor: Color = Color.Black,
+) {
+    var startVectorSource by remember { mutableStateOf(vectorSource) }
+    var endVectorSource by remember { mutableStateOf(vectorSource) }
+    val animationProgress = remember { Animatable(0f) }
+    LaunchedEffect(key1 = vectorSource) {
+        if (animationProgress.value != animationProgress.targetValue) {
+            animationProgress.animateTo(
+                targetValue = animationProgress.targetValue,
+                animationSpec = tween(180)
+            )
+            delay(200)
+        }
+
+        when (animationProgress.targetValue) {
+            1f -> {
+                startVectorSource = vectorSource
+                animationProgress.animateTo(
+                    0f,
+                    animationSpec = animationSpec,
+                )
+            }
+
+            0f -> {
+                endVectorSource = vectorSource
+                animationProgress.animateTo(
+                    1f,
+                    animationSpec = animationSpec,
+                )
+            }
+        }
+    }
+    AnimatedVector(
+        modifier = modifier,
+        startSource = startVectorSource,
+        endSource = endVectorSource,
+        progress = animationProgress.value,
+        strokeWidth = strokeWidth,
+        strokeColor = strokeColor,
+    )
+}
+
+@Composable
+fun AnimatedVector(
     modifier: Modifier = Modifier,
     startSource: VectorSource,
     endSource: VectorSource,
