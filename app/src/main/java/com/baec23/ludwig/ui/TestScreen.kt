@@ -18,6 +18,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.Face
 import androidx.compose.material.icons.outlined.Refresh
@@ -32,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -91,33 +96,56 @@ fun TestScreen() {
     val helloBubbleVectorSource =
         VectorSource.fromImageVector(ImageVector.vectorResource(R.drawable.hellobubble))
 
+    val addVectorSource =
+        VectorSource.fromImageVector(Icons.Outlined.Add)
+    val closeVectorSource =
+        VectorSource.fromImageVector(Icons.Outlined.Close)
+    val checkVectorSource =
+        VectorSource.fromImageVector(Icons.Outlined.Check)
+    val checkCircleVectorSource =
+        VectorSource.fromImageVector(Icons.Outlined.CheckCircle)
+
+    val testStringVectorSource = VectorSource.fromText("H")
+    val testStringVectorSource2 = VectorSource.fromText("E")
+    val testStringVectorSource3 = VectorSource.fromText("L")
+    val testStringVectorSource4 = VectorSource.fromText("L")
+    val testStringVectorSource5 = VectorSource.fromText("O")
 
     val targetVectors: List<VectorSource> = listOf(
-        redditVectorSource,
-        androidVectorSource,
-        chromeVectorSource,
-        firefoxVectorSource,
-        skypeVectorSource,
-        refreshVectorSource,
-        shoppingCartVectorSource,
-        createVectorSource,
-        fireVectorSource,
-        diamondVectorSource,
-        helloBubbleVectorSource,
-        paypalVectorSource,
-        pinterestVectorSource,
-        appleVectorSource,
-        slackVectorSource,
-        youtubeVectorSource,
-        instagramVectorSource,
-        snapchatVectorSource,
-        twitterVectorSource,
-        flowerVectorSource,
-        faceVectorSource,
-        yinYangVectorSource,
-        settingsVectorSource,
-        cloverVectorSource,
-        worldLoveVectorSource,
+//        redditVectorSource,
+//        androidVectorSource,
+//        chromeVectorSource,
+//        firefoxVectorSource,
+//        skypeVectorSource,
+//        refreshVectorSource,
+//        shoppingCartVectorSource,
+//        createVectorSource,
+//        fireVectorSource,
+//        diamondVectorSource,
+//        helloBubbleVectorSource,
+//        paypalVectorSource,
+//        pinterestVectorSource,
+//        appleVectorSource,
+//        slackVectorSource,
+//        youtubeVectorSource,
+//        instagramVectorSource,
+//        snapchatVectorSource,
+//        twitterVectorSource,
+//        flowerVectorSource,
+//        faceVectorSource,
+//        yinYangVectorSource,
+//        settingsVectorSource,
+//        cloverVectorSource,
+//        worldLoveVectorSource,
+//        addVectorSource,
+//        closeVectorSource,
+//        checkVectorSource,
+//        checkCircleVectorSource,
+        testStringVectorSource,
+        testStringVectorSource2,
+        testStringVectorSource3,
+        testStringVectorSource4,
+        testStringVectorSource5,
     )
 
     var currSelectedSource by remember { mutableStateOf(appleVectorSource) }
@@ -133,7 +161,8 @@ fun TestScreen() {
                     .padding(36.dp),
                 vectorSource = currSelectedSource,
                 strokeWidth = 30f,
-                animationSpec = tween(durationMillis = 1000, easing = EaseInOutExpo)
+//                animationSpec = tween(durationMillis = 1000, easing = EaseInOutExpo)
+                animationSpec = tween(durationMillis = 800, easing = EaseInOutExpo)
             )
         }
         DisplaySection(

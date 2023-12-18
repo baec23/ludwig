@@ -94,26 +94,30 @@ fun PathExplorerScreen() {
         VectorSource.fromImageVector(ImageVector.vectorResource(R.drawable.diamond))
     val helloBubbleVectorSource =
         VectorSource.fromImageVector(ImageVector.vectorResource(R.drawable.hellobubble))
+    val testStringVectorSource = VectorSource.fromText("HELLO")
+    val testStringVectorSource2 = VectorSource.fromText("WORLD")
 
 
     val targetVectors: List<VectorSource> = listOf(
 //        redditVectorSource,
 //        androidVectorSource,
-        appleVectorSource,
-        slackVectorSource,
-        youtubeVectorSource,
-        instagramVectorSource,
-        snapchatVectorSource,
-        twitterVectorSource,
-        flowerVectorSource,
-        faceVectorSource,
-        yinYangVectorSource,
-        settingsVectorSource,
-        cloverVectorSource,
-        worldLoveVectorSource,
+//        appleVectorSource,
+//        slackVectorSource,
+//        youtubeVectorSource,
+//        instagramVectorSource,
+//        snapchatVectorSource,
+//        twitterVectorSource,
+//        flowerVectorSource,
+//        faceVectorSource,
+//        yinYangVectorSource,
+//        settingsVectorSource,
+//        cloverVectorSource,
+//        worldLoveVectorSource,
+        testStringVectorSource,
+        testStringVectorSource2
     )
 
-    var currSelectedSource by remember { mutableStateOf(appleVectorSource) }
+    var currSelectedSource by remember { mutableStateOf(testStringVectorSource) }
     var isControlsExpanded by remember { mutableStateOf(false) }
     var isDetailsExpanded by remember { mutableStateOf(false) }
     val colors =

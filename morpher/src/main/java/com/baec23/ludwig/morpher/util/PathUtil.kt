@@ -13,6 +13,12 @@ import kotlin.math.abs
 
 internal fun List<androidx.graphics.path.PathSegment>.toSubpaths(
     bounds: RectF,
+): List<LudwigSubpath> {
+    return this.toSubpaths(bounds, bounds.width(), bounds.height())
+}
+
+internal fun List<androidx.graphics.path.PathSegment>.toSubpaths(
+    bounds: RectF,
     targetWidth: Float,
     targetHeight: Float,
 ): List<LudwigSubpath> {
