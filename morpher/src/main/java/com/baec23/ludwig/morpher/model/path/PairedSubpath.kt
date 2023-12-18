@@ -4,52 +4,41 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.PathNode
 import com.baec23.ludwig.morpher.util.distanceTo
 import com.baec23.ludwig.morpher.util.lerp
-import com.baec23.ludwig.morpher.util.reversedWindingDirection
-import com.baec23.ludwig.morpher.util.rotateToIndex
-import com.baec23.ludwig.morpher.util.toPathSegments
 import kotlin.math.abs
 
 class PairedSubpath(
-    startPathNodes: List<PathNode>,
-    endPathNodes: List<PathNode>,
+    var startSubpath: LudwigSubpath,
+    var endSubpath: LudwigSubpath,
 ) : AnimatedSubpath {
-    var startPathSegments: MutableList<PathSegment> =
-        startPathNodes.toPathSegments().toMutableList()
-    var endPathSegments: MutableList<PathSegment> = endPathNodes.toPathSegments().toMutableList()
-
-    private val startIsClosed: Boolean = startPathNodes.find { it == PathNode.Close } != null
-    private val endIsClosed: Boolean = endPathNodes.find { it == PathNode.Close } != null
 
     init {
-        if (startIsClosed && endIsClosed) {
-
-            val shouldReverse = startPathSegments.isClockwise().xor(endPathSegments.isClockwise())
-            if (shouldReverse) {
-                endPathSegments = endPathSegments.reversedWindingDirection().toMutableList()
+        if (startSubpath.isClosed && endSubpath.isClosed) {
+            if (startSubpath.area > 0 && endSubpath.area < 0 || startSubpath.area < 0 && endSubpath.area > 0) {
+                endSubpath = endSubpath.reverse()
             }
-
-            val filtered =
-                endPathSegments.filterNot { it.pathNode is PathNode.MoveTo || it.pathNode is PathNode.RelativeMoveTo }
             val closestEndIndex =
-                filtered.findShortestDistanceIndex(startPathSegments.first { it.pathNode !is PathNode.MoveTo }.startPosition)
-            val closestEndSegment = filtered[closestEndIndex]
-            endPathSegments = filtered.rotateToIndex(closestEndIndex).toMutableList()
-            endPathSegments.add(
-                0, PathSegment(
-                    startPosition = closestEndSegment.startPosition,
-                    endPosition = closestEndSegment.startPosition,
-                    pathNode = PathNode.MoveTo(
-                        closestEndSegment.startPosition.x, closestEndSegment.startPosition.y
-                    )
-                )
-            )
+                endSubpath.pathSegments.findShortestDistanceIndex(startSubpath.pathSegments.first().startPosition)
+            endSubpath = endSubpath.rotateToIndex(closestEndIndex)
         }
-
         equalizeSegments()
     }
 
     override fun getInterpolatedPathNodes(fraction: Float): List<PathNode> {
+        val startPathSegments = startSubpath.pathSegments
+        val endPathSegments = endSubpath.pathSegments
         val interpolatedPathNodes = mutableListOf<PathNode>()
+        val startX = lerp(
+            startPathSegments.first().startPosition.x,
+            endPathSegments.first().startPosition.x,
+            fraction
+        )
+        val startY = lerp(
+            startPathSegments.first().startPosition.y,
+            endPathSegments.first().startPosition.y,
+            fraction
+        )
+        interpolatedPathNodes.add(PathNode.MoveTo(startX, startY))
+
         startPathSegments.forEachIndexed { index, pathSegment ->
             interpolatedPathNodes.add(
                 pathSegment.pathNode.lerp(
@@ -57,12 +46,12 @@ class PairedSubpath(
                 )
             )
         }
-        if (startIsClosed && endIsClosed) {
+        if (startSubpath.isClosed && endSubpath.isClosed) {
             interpolatedPathNodes.add(PathNode.Close)
         } else {
-            if (startIsClosed && fraction < 0.01f) {
+            if (startSubpath.isClosed && fraction == 0f) {
                 interpolatedPathNodes.add(PathNode.Close)
-            } else if (endIsClosed && fraction > 0.99f) {
+            } else if (endSubpath.isClosed && fraction == 1f) {
                 interpolatedPathNodes.add(PathNode.Close)
             }
         }
@@ -70,6 +59,8 @@ class PairedSubpath(
     }
 
     private fun equalizeSegments() {
+        val startPathSegments = startSubpath.pathSegments.toMutableList()
+        val endPathSegments = endSubpath.pathSegments.toMutableList()
         val diff = startPathSegments.size - endPathSegments.size
         if (diff == 0) {
             return
@@ -95,6 +86,8 @@ class PairedSubpath(
                 endPathSegments.addAll(index, splitSegments)
             }
         }
+        startSubpath = startSubpath.copy(pathSegments = startPathSegments.toList())
+        endSubpath = endSubpath.copy(pathSegments = endPathSegments.toList())
     }
 
     private fun List<PathSegment>.findShortestDistanceIndex(target: Offset): Int {
@@ -109,19 +102,4 @@ class PairedSubpath(
         }
         return closestEndIndex
     }
-}
-
-private fun List<PathSegment>.isClockwise(): Boolean {
-    return this.getArea() >= 0
-}
-
-private fun List<PathSegment>.getArea(): Float {
-    var area = 0f
-    val filtered = this.filter { it.pathNode is PathNode.CurveTo }
-    filtered.forEach {
-        val trapezoidArea =
-            (it.endPosition.x - it.startPosition.x) * (it.startPosition.y + it.endPosition.y) / 2
-        area += trapezoidArea
-    }
-    return area
 }

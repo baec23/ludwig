@@ -45,7 +45,7 @@ import com.baec23.ludwig.morpher.model.morpher.VectorSource
 
 
 @Composable
-fun TestScreen2() {
+fun TestScreen() {
     val androidVectorSource =
         VectorSource.fromImageVector(ImageVector.vectorResource(R.drawable.androidlogo))
     val appleVectorSource =
@@ -93,8 +93,19 @@ fun TestScreen2() {
 
 
     val targetVectors: List<VectorSource> = listOf(
-//        redditVectorSource,
-//        androidVectorSource,
+        redditVectorSource,
+        androidVectorSource,
+        chromeVectorSource,
+        firefoxVectorSource,
+        skypeVectorSource,
+        refreshVectorSource,
+        shoppingCartVectorSource,
+        createVectorSource,
+        fireVectorSource,
+        diamondVectorSource,
+        helloBubbleVectorSource,
+        paypalVectorSource,
+        pinterestVectorSource,
         appleVectorSource,
         slackVectorSource,
         youtubeVectorSource,
@@ -122,7 +133,7 @@ fun TestScreen2() {
                     .padding(36.dp),
                 vectorSource = currSelectedSource,
                 strokeWidth = 30f,
-                animationSpec = tween(durationMillis = 800, easing = EaseInOutExpo)
+                animationSpec = tween(durationMillis = 1000, easing = EaseInOutExpo)
             )
         }
         DisplaySection(

@@ -5,14 +5,6 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-internal fun <T> List<T>.rotateToIndex(index: Int): List<T> {
-    if (index <= 0 || index >= size) {
-        return this
-    }
-
-    return this.subList(index, this.size) + this.subList(0, index)
-}
-
 internal fun getClampedIndex(fraction: Float, maxIndex: Int): Int {
     var toReturn = (maxIndex * fraction).roundToInt()
     if (toReturn > maxIndex) {

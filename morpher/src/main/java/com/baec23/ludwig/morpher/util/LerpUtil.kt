@@ -1,5 +1,6 @@
 package com.baec23.ludwig.morpher.util
 
+import android.graphics.PointF
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.PathNode
 
@@ -184,5 +185,12 @@ internal fun lerp(start: Offset, end: Offset, t: Float): Offset {
     return Offset(
         x = (1 - t) * start.x + t * end.x,
         y = (1 - t) * start.y + t * end.y
+    )
+}
+
+internal fun lerp(start: PointF, end: PointF, t: Float): PointF {
+    return PointF(
+        (1 - t) * start.x + t * end.x,
+        (1 - t) * start.y + t * end.y
     )
 }

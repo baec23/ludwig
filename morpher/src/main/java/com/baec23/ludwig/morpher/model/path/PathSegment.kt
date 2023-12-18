@@ -7,22 +7,21 @@ import androidx.compose.ui.graphics.vector.PathNode
 import androidx.compose.ui.graphics.vector.PathParser
 import com.baec23.ludwig.morpher.util.lerp
 
-class PathSegment(
+data class PathSegment(
     val startPosition: Offset,
     val endPosition: Offset,
     val pathNode: PathNode,
 ) {
-    var path: Path = Path()
-    var length: Float
-    private var pathMeasurer: PathMeasure = PathMeasure()
+    val path: Path = PathParser().addPathNodes(
+        listOf(
+            PathNode.MoveTo(startPosition.x, startPosition.y),
+            pathNode
+        )
+    ).toPath()
+    val length: Float
+    private val pathMeasurer: PathMeasure = PathMeasure()
 
     init {
-        path = PathParser().addPathNodes(
-            listOf(
-                PathNode.MoveTo(startPosition.x, startPosition.y),
-                pathNode
-            )
-        ).toPath()
         pathMeasurer.setPath(path, false)
         length = pathMeasurer.length
     }
