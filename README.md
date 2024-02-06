@@ -13,7 +13,7 @@ repositories {
 #### Add Gradle dependency (build.gradle.kts (app))
 ```
 dependencies {
-    implementation "com.github.baec23.ludwig:morpher:1.0.3"
+    implementation "com.github.baec23.ludwig:morpher:1.0.4"
 }
 ```
 [Demo](https://github.com/baec23/ludwig/assets/65561206/a9e49756-aa94-4657-b39c-e48ffb726202)
