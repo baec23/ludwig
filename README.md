@@ -80,8 +80,7 @@ fun MorpherSample() {
 ```
 ### Issues
 - Only Stroke is supported for now
-- Arcs are not supported for now
-- Performance is likely pretty terrible
+- Fills will be weird
 
 # UI Components
 #### Add Gradle dependency (build.gradle.kts (app))
