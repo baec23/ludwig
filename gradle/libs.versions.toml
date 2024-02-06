@@ -5,6 +5,9 @@ androidxLifecycle = "2.6.2"
 androidxActivity = "1.8.1"
 androidxComposeBom = "2023.10.01"
 androidxComposeCompiler = "1.5.4"
+androidxGraphicsPath = "1.0.0-beta01"
+androidxGraphicsShapes = "1.0.0-alpha04"
+
 androidxNavigation = "2.7.5"
 appcompat = "1.6.1"
 espressoCore = "3.5.1"
@@ -35,6 +38,9 @@ androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-te
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-compose-animation-animation-graphics = { module = "androidx.compose.animation:animation-graphics", version.ref = "androidxComposeCompiler"}
+androidx-graphics-core = { module = "androidx.graphics:graphics-core", version.ref = "androidxGraphicsPath"}
+androidx-graphics-path = { module = "androidx.graphics:graphics-path", version.ref = "androidxGraphicsPath"}
+androidx-graphics-shapes = { module = "androidx.graphics:graphics-shapes", version.ref = "androidxGraphicsShapes"}
 
 #Testing
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }

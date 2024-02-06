@@ -64,6 +64,11 @@ dependencies {
     implementation(composeBom)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.compose.material3)
+    implementation(project(":core"))
+    implementation(project(":component"))
+    implementation(libs.androidx.graphics.core)
+    implementation(libs.androidx.graphics.path)
+    implementation(libs.androidx.graphics.shapes)
 
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)

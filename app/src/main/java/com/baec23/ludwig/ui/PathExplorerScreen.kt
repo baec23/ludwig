@@ -1,7 +1,5 @@
 package com.baec23.ludwig.ui
 
-import androidx.compose.animation.core.EaseInOutExpo
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,20 +12,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.Face
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -37,15 +38,18 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.baec23.ludwig.R
-import com.baec23.ludwig.component.section.DisplaySection
 import com.baec23.ludwig.component.fadinglazy.FadingLazyVerticalGrid
-import com.baec23.ludwig.morpher.component.AnimatedVector
+import com.baec23.ludwig.component.section.DisplaySection
+import com.baec23.ludwig.component.section.ExpandableDisplaySection
+import com.baec23.ludwig.morpher.component.DebugVectorImage
 import com.baec23.ludwig.morpher.component.VectorImage
 import com.baec23.ludwig.morpher.model.morpher.VectorSource
-
+import com.baec23.ludwig.morpher.model.path.LudwigSubpath
+import com.baec23.ludwig.morpher.model.path.PathSegment
+import kotlin.random.Random
 
 @Composable
-fun TestScreen2() {
+fun PathExplorerScreen() {
     val androidVectorSource =
         VectorSource.fromImageVector(ImageVector.vectorResource(R.drawable.androidlogo))
     val appleVectorSource =
@@ -90,43 +94,71 @@ fun TestScreen2() {
         VectorSource.fromImageVector(ImageVector.vectorResource(R.drawable.diamond))
     val helloBubbleVectorSource =
         VectorSource.fromImageVector(ImageVector.vectorResource(R.drawable.hellobubble))
+    val testStringVectorSource = VectorSource.fromText("HELLO")
+    val testStringVectorSource2 = VectorSource.fromText("WORLD")
 
 
     val targetVectors: List<VectorSource> = listOf(
 //        redditVectorSource,
 //        androidVectorSource,
-        appleVectorSource,
-        slackVectorSource,
-        youtubeVectorSource,
-        instagramVectorSource,
-        snapchatVectorSource,
-        twitterVectorSource,
-        flowerVectorSource,
-        faceVectorSource,
-        yinYangVectorSource,
-        settingsVectorSource,
-        cloverVectorSource,
-        worldLoveVectorSource,
+//        appleVectorSource,
+//        slackVectorSource,
+//        youtubeVectorSource,
+//        instagramVectorSource,
+//        snapchatVectorSource,
+//        twitterVectorSource,
+//        flowerVectorSource,
+//        faceVectorSource,
+//        yinYangVectorSource,
+//        settingsVectorSource,
+//        cloverVectorSource,
+//        worldLoveVectorSource,
+        testStringVectorSource,
+        testStringVectorSource2
     )
 
-    var currSelectedSource by remember { mutableStateOf(appleVectorSource) }
+    var currSelectedSource by remember { mutableStateOf(testStringVectorSource) }
+    var isControlsExpanded by remember { mutableStateOf(false) }
+    var isDetailsExpanded by remember { mutableStateOf(false) }
+    val colors =
+        remember(currSelectedSource) { generateRandomColors(currSelectedSource.ludwigPath.subpaths.size) }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         Column(
-            modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxWidth()
         ) {
-            AnimatedVector(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .padding(36.dp),
-                vectorSource = currSelectedSource,
-                strokeWidth = 30f,
-                animationSpec = tween(durationMillis = 800, easing = EaseInOutExpo)
+            DebugVectorImage(
+                modifier = Modifier.fillMaxWidth(),
+                source = currSelectedSource,
+                colors = colors
             )
         }
-        DisplaySection(
+        ExpandableDisplaySection(
             modifier = Modifier.padding(horizontal = 8.dp),
+            isExpanded = isDetailsExpanded,
+            onExpand = { isDetailsExpanded = !isDetailsExpanded },
+            headerText = "Details",
+            contentPadding = PaddingValues(16.dp),
+            headerIcon = Icons.Default.List
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                currSelectedSource.ludwigPath.subpaths.forEachIndexed { index, subpath ->
+                    SubpathItem(subpath = subpath, subpathIndex = index, color = colors[index])
+                }
+            }
+        }
+
+        ExpandableDisplaySection(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            isExpanded = isControlsExpanded,
+            onExpand = { isControlsExpanded = !isControlsExpanded },
             headerText = "Controls",
             contentPadding = PaddingValues(16.dp),
             headerIcon = Icons.Default.Star
@@ -160,5 +192,41 @@ fun TestScreen2() {
                 }
             }
         }
+
+    }
+}
+
+@Composable
+fun SubpathItem(subpath: LudwigSubpath, subpathIndex: Int, color: Color) {
+    var isExpanded by remember { mutableStateOf(false) }
+    ExpandableDisplaySection(
+        isExpanded = isExpanded,
+        onExpand = { isExpanded = !isExpanded },
+        headerText = "Subpath ${subpathIndex} | isClosed = ${subpath.isClosed} | area = ${subpath.area} | length = ${subpath.length}",
+        headerIcon = Icons.Filled.Star,
+        headerIconColor = color
+    ) {
+        subpath.pathSegments.forEach {
+            PathSegmentItem(pathSegment = it)
+        }
+    }
+}
+
+@Composable
+fun PathSegmentItem(pathSegment: PathSegment) {
+    DisplaySection(headerText = pathSegment.pathNode.javaClass.name.split("$").last()) {
+        Text(text = "start = (${pathSegment.startPosition.x}, ${pathSegment.startPosition.y})")
+        Text(text = "end = (${pathSegment.endPosition.x}, ${pathSegment.endPosition.y})")
+    }
+}
+
+private fun generateRandomColors(count: Int): List<Color> {
+    return List(count) {
+        Color(
+            red = Random.nextFloat(),
+            green = Random.nextFloat(),
+            blue = Random.nextFloat(),
+            alpha = 1f // You can adjust alpha if needed
+        )
     }
 }

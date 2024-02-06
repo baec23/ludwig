@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.baec23.ludwig.ui.MorpherSample
-import com.baec23.ludwig.ui.TestScreen2
+import com.baec23.ludwig.ui.PathExplorerScreen
+import com.baec23.ludwig.ui.TestScreen
 import com.baec23.ludwig.ui.theme.LudwigTheme
 
 class MainActivity : ComponentActivity() {
@@ -22,8 +22,10 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MorpherSample()
-//                    TestScreen2()
+//                    GraphicsTest()
+//                    MorpherSample()
+                    TestScreen()
+//                    PathExplorerScreen()
 //                    Column(
 //                        modifier = Modifier
 //                            .fillMaxWidth()

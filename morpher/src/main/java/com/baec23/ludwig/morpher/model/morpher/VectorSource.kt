@@ -1,26 +1,29 @@
 package com.baec23.ludwig.morpher.model.morpher
 
+import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.RectF
+import android.graphics.Typeface
+import android.util.Log
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.PathOperation.Companion.Difference
+import androidx.compose.ui.graphics.PathOperation.Companion.Union
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.PathNode
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.graphics.vector.VectorPath
-import com.baec23.ludwig.morpher.util.normalize
-import org.xml.sax.InputSource
-import java.io.ByteArrayInputStream
-import javax.xml.parsers.DocumentBuilderFactory
+import androidx.compose.ui.graphics.vector.toPath
+import com.baec23.ludwig.morpher.model.path.LudwigPath
+import com.baec23.ludwig.morpher.model.path.LudwigSubpath
 
 
 data class VectorSource(
-    val pathData: List<PathNode>,
-    val bounds: Rect,
+    val ludwigPath: LudwigPath,
     val viewportSize: Size,
     val viewportOffset: Offset,
+    val vectorSize: Size,
+    val vectorOffset: Offset
 ) {
-    private val memo = HashMap<Offset, List<PathNode>>()
-
     companion object {
         /**
          * The 'd' attribute within a <path> element
@@ -39,70 +42,61 @@ data class VectorSource(
             val viewportOffsetX = viewportOffset?.x ?: bounds.left
             val viewportOffsetY = viewportOffset?.y ?: bounds.top
             return VectorSource(
-                pathData,
-                bounds,
+                LudwigPath.fromPath(pathData.toPath(), 1000f, 1000f),
                 Size(viewportWidth, viewportHeight),
-                Offset(viewportOffsetX, viewportOffsetY)
+                Offset(viewportOffsetX, viewportOffsetY),
+                Size(1000f, 1000f),
+                Offset(0f, 0f)
             )
-        }
-
-        fun fromSvgString(
-            svgString: String
-        ): VectorSource {
-            val factory = DocumentBuilderFactory.newInstance()
-            val builder = factory.newDocumentBuilder()
-            val inputStream = ByteArrayInputStream(svgString.toByteArray(Charsets.UTF_8))
-            val document = builder.parse(InputSource(inputStream))
-
-            val svgElement = document.getElementsByTagName("svg").item(0)
-            val viewBoxValues = svgElement.attributes.getNamedItem("viewBox").nodeValue.split(" ")
-                .map { it.toFloat() }
-
-            val pathStringBuilder = StringBuilder()
-            val pathElements = document.getElementsByTagName("path")
-
-            for (i in 0 until pathElements.length) {
-                val pathElement = pathElements.item(i)
-                val pathD = pathElement.attributes.getNamedItem("d")
-                pathStringBuilder.append(pathD.nodeValue)
-            }
-            return fromPathString(
-                pathString = pathStringBuilder.toString(),
-                viewportSize = Size(viewBoxValues[2], viewBoxValues[3]),
-                viewportOffset = Offset(viewBoxValues[0], viewBoxValues[1])
-            )
-
         }
 
         fun fromImageVector(imageVector: ImageVector): VectorSource {
             val pathData = imageVector.root.filterIsInstance<VectorPath>().flatMap { it.pathData }
-            val pathParser = PathParser()
-            pathParser.addPathNodes(pathData)
-            val bounds = pathParser.toPath().getBounds()
             return VectorSource(
-                pathData,
-                bounds,
+                LudwigPath.fromPath(pathData.toPath(), 1000f, 1000f),
                 Size(imageVector.viewportWidth, imageVector.viewportHeight),
+                Offset(0f, 0f),
+                Size(1000f, 1000f),
                 Offset(0f, 0f)
             )
         }
-    }
 
-    fun getNormalizedPathData(width: Float, height: Float): List<PathNode> {
-        if (memo.containsKey(Offset(width, height))) {
-            return memo[Offset(width, height)]!!
+        fun fromText(text: String): VectorSource {
+            val path = Path()
+            val paint = Paint()
+            paint.setTypeface(Typeface.SERIF)
+
+            val bounds = RectF()
+
+            paint.getTextPath(text, 0, text.length, 0f, 0f, path)
+            val unscaledLudwigPath = LudwigPath.fromPath(path)
+            val resultPath = androidx.compose.ui.graphics.Path()
+            var prevSubpath: LudwigSubpath? = null
+            unscaledLudwigPath.subpaths.forEach { subpath ->
+                val currBounds = subpath.toComposePath().getBounds()
+                var pathOperation = Union
+                prevSubpath?.let { prev ->
+                    val prevBounds = prev.toComposePath().getBounds()
+                    if (currBounds.left >= prevBounds.left &&
+                        currBounds.right <= prevBounds.right &&
+                        currBounds.top >= prevBounds.top &&
+                        currBounds.bottom <= prevBounds.bottom
+                    ) {
+                        pathOperation = Difference
+
+                    }
+                }
+                resultPath.op(resultPath, subpath.toComposePath(), pathOperation)
+                prevSubpath = subpath
+            }
+
+            return VectorSource(
+                LudwigPath.fromPath(resultPath, 1000f, 1000f),
+                Size(bounds.width(), bounds.height()),
+                Offset(bounds.left, bounds.right),
+                Size(1000f, 1000f),
+                Offset(0f, 0f)
+            )
         }
-        //Calc offset / scale
-        val targetWidth = if (width > 0f) width else bounds.width
-        val targetHeight =
-            if (height > 0f) height else bounds.height
-        val scaleFactorX = targetWidth / bounds.width
-        val scaleFactorY = targetHeight / bounds.height
-
-        //Normalize (offset + scale paths)
-        val normalized =
-            pathData.normalize(Offset(bounds.left, bounds.top), scaleFactorX, scaleFactorY)
-        memo[Offset(width, height)] = normalized
-        return normalized
     }
 }
